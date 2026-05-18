@@ -189,6 +189,7 @@ userApp.post("/refresh", async (req, res) => {
     res.status(401).json({ message: "Invalid or expired refresh token" })
   }
 })
+//update profile
 userApp.put("/update-profile",verifyToken,async(req,res)=>{
     try{
         const id=req.user.id;
@@ -206,5 +207,46 @@ userApp.put("/update-profile",verifyToken,async(req,res)=>{
     catch(err){
         console.log(err)
         res.status(500).json({message:"Error updating profile"})
+    }
+})
+//downloads
+userApp.get("/downloads",verifyToken,async(req,res)=>{
+    try{
+        const user=await UserModel.findById(req.user.id).populate("downloads")
+        res.status(200).json({message:"Downloaded resources",payload:user.downloads})
+    }
+    catch(err){
+        res.status(500).json({message:"Cannot fetch downloads"})
+    }
+})
+//saved resources
+userApp.get("/saved-resources",verifyToken,async(req,res)=>{
+    try{
+        const user=await UserModel.findById(req.user.id).populate("savedResources")
+        res.status(200).json({message:"Saved resources",payload:user.savedResources})
+    }
+    catch(err){
+        res.status(500).json({message:"Cannot fetch saved resources"})
+    }
+})
+//dashboard
+userApp.get("/dashboard",verifyToken,async(req,res)=>{
+    try{
+        const id=req.user.id;
+        const user=await UserModel.findById(id);
+        const uploadCount=await ResourceModel.countDocuments({uploadedBy:id})
+        const dashboardData={
+        name:user.name,
+        points:user.points,
+        uploads:uploadCount,
+        savedResources:user.savedResources.length,
+        downloads:user.downloads.length,
+        badges:user.badges
+     }
+        res.status(200).json({message:"Dashboard data",payload:dashboardData})
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json({message:"Dashboard error"})
     }
 })
