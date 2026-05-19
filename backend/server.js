@@ -4,8 +4,8 @@ import {config} from 'dotenv'
 import cookieParser from "cookie-parser"
 import cors from 'cors'
 import {resourceApp} from './API/resourceAPI'
-import { userApp } from './API/userAPI'
-import { doubtApp } from './API/doubtAPI'
+import {userApp} from './API/userAPI'
+import {doubtApp} from './API/doubtAPI'
 config()
  const app=exp()
  app.use(cors({
