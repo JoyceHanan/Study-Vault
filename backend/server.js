@@ -6,6 +6,7 @@ import cors from 'cors'
 import {resourceApp} from './API/resourceAPI'
 import {userApp} from './API/userAPI'
 import {doubtApp} from './API/doubtAPI'
+import {chatApp} from './API/chatAPI'
 config()
  const app=exp()
  app.use(cors({
@@ -17,6 +18,7 @@ config()
  app.use("/user-api",userApp)
  app.use("/resource-api",resourceApp)
  app.use("/doubt-api",doubtApp)
+ app.use("/chat-api",chatApp)
  const port=process.env.PORT||6000
  const connectionDb=async()=>{
     try{
