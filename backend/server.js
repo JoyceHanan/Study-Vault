@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser"
 import cors from 'cors'
 import {resourceApp} from './API/resourceAPI'
 import { userApp } from './API/userAPI'
+import { doubtApp } from './doubtAPI'
 config()
  const app=exp()
  app.use(cors({
@@ -15,6 +16,7 @@ config()
  app.use(cookieParser())
  app.use("/user-api",userApp)
  app.use("/resource-api",resourceApp)
+ app.use("/doubt-api",doubtApp)
  const port=process.env.PORT||6000
  const connectionDb=async()=>{
     try{
