@@ -26,8 +26,8 @@ config()
  app.use("/chat-api",chatApp)
  app.use("/bookmark-api",bookmarkApp)
  app.use("/notification-api",notificationApp)
-app.use("whiteboard-api",whiteboardApp)
-app.use("report-api",reportApp)
+ app.use("whiteboard-api",whiteboardApp)
+ app.use("report-api",reportApp)
  const port=process.env.PORT||6000
  const connectionDb=async()=>{
     try{
