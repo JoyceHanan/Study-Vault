@@ -9,7 +9,6 @@ import {doubtApp} from './API/doubtAPI.js'
 import {chatApp} from './API/chatAPI.js'
 import {bookmarkApp} from './API/bookmarkAPI.js'
 import {notificationApp} from './API/notificationAPI.js'
-import {use} from 'react'
 import {whiteboardApp} from './API/whiteboardAPI.js'
 import {reportApp} from './API/reportAPI.js'
 import http from "http";
@@ -37,20 +36,20 @@ config()
  app.use("/chat-api",chatApp)
  app.use("/bookmark-api",bookmarkApp)
  app.use("/notification-api",notificationApp)
- app.use("whiteboard-api",whiteboardApp)
- app.use("report-api",reportApp)
+ app.use("/whiteboard-api",whiteboardApp)
+ app.use("/report-api",reportApp)
  const port=process.env.PORT||6000
  const connectionDb=async()=>{
     try{
         await connect(process.env.DB_URL);
         console.log("connected ");
-        app.listen(port,()=>console.log(`server is started on ${port}`))
+        server.listen(port,()=>console.log(`server is started on ${port}`))
     }catch(err){
         console.log(err)
     }
  }
  connectionDb()
- app.use((req,res,next)=>{
+ app.use((req,res)=>{
     console.log(req.url);
     res.status(404).json({message:"invald path"})
 })
