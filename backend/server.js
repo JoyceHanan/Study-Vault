@@ -11,6 +11,7 @@ import {bookmarkApp} from './API/bookmarkAPI.js'
 import {notificationApp} from './API/notificationAPI.js'
 import {use} from 'react'
 import {whiteboardApp} from './API/whiteboardAPI.js'
+import {reportApp} from './API/reportAPI.js'
 config()
  const app=exp()
  app.use(cors({
@@ -26,6 +27,7 @@ config()
  app.use("/bookmark-api",bookmarkApp)
  app.use("/notification-api",notificationApp)
 app.use("whiteboard-api",whiteboardApp)
+app.use("report-api",reportApp)
  const port=process.env.PORT||6000
  const connectionDb=async()=>{
     try{
