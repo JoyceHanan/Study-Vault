@@ -1,5 +1,5 @@
 import exp from "express";
-import {NotificationModel} from "../model/notificationModel.js";
+import {NotificationModel} from "../models/notificationModel.js";
 import {verifyToken} from "../middleware/verifyToken.js";
 export const notificationApp = exp.Router();
 // GET ALL NOTIFICATIONS OF CURRENT USER

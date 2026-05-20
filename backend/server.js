@@ -12,12 +12,23 @@ import {notificationApp} from './API/notificationAPI.js'
 import {use} from 'react'
 import {whiteboardApp} from './API/whiteboardAPI.js'
 import {reportApp} from './API/reportAPI.js'
+import http from "http";
+import {Server} from "socket.io";
+import {socketConnection}from "./socket/socket.js"
 config()
  const app=exp()
  app.use(cors({
     origin:"http://localhost:5173",
     credentials:true
 }))
+//Socket connection
+ const server=http.createServer(app);
+ const io=new Server(server,{cors:{
+        origin: "http://localhost:5173",
+        credentials: true
+    }});
+ socketConnection(io);
+
  app.use(exp.json())
  app.use(cookieParser())
  app.use("/user-api",userApp)
