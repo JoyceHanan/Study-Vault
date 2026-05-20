@@ -16,5 +16,4 @@ const notificationSchema=new Schema({
     versionKey:false,
     strict:"throw"
 })
-
 export const NotificationModel=model("notification",notificationSchema)

@@ -8,6 +8,7 @@ import {userApp} from './API/userAPI.js'
 import {doubtApp} from './API/doubtAPI.js'
 import {chatApp} from './API/chatAPI.js'
 import {bookmarkApp} from './API/bookmarkAPI.js'
+import {notificationApp} from './API/notificationAPI.js'
 import {use} from 'react'
 config()
  const app=exp()
@@ -22,6 +23,7 @@ config()
  app.use("/doubt-api",doubtApp)
  app.use("/chat-api",chatApp)
  app.use("/bookmark-api",bookmarkApp)
+ app.use("/notification-api",notificationApp) 
  const port=process.env.PORT||6000
  const connectionDb=async()=>{
     try{
