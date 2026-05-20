@@ -3,11 +3,11 @@ import {connect} from 'mongoose'
 import {config} from 'dotenv'
 import cookieParser from "cookie-parser"
 import cors from 'cors'
-import {resourceApp} from './API/resourceAPI'
-import {userApp} from './API/userAPI'
-import {doubtApp} from './API/doubtAPI'
-import {chatApp} from './API/chatAPI'
-import {bookmarkApp} from './API/bookmarkAPI'
+import {resourceApp} from './API/resourceAPI.js'
+import {userApp} from './API/userAPI.js'
+import {doubtApp} from './API/doubtAPI.js'
+import {chatApp} from './API/chatAPI.js'
+import {bookmarkApp} from './API/bookmarkAPI.js'
 import {use} from 'react'
 config()
  const app=exp()

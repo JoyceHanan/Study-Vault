@@ -1,6 +1,6 @@
 import exp from "express"
-import {ResourceModel} from "../model/resourceModel.js"
-import {UserModel} from "../model/userModel.js"
+import {ResourceModel} from "../models/resourceModel.js"
+import {UserModel} from "../models/userModel.js"
 import {verifyToken} from "../middleware/verifyToken.js"
 export const resourceApp=exp.Router()
 //UPLOAD RESOURCE
