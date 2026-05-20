@@ -1,5 +1,5 @@
 import exp from "express";
-import { WhiteboardModel } from "../model/whiteboardModel.js";
+import { WhiteboardModel } from "../models/whiteboardModel.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 export const whiteboardApp = exp.Router();
 // Create room
