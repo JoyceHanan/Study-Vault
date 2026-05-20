@@ -1,5 +1,5 @@
 import exp from "express";
-import {BookmarkModel} from "../model/bookmarkModel.js";
+import {BookmarkModel} from "../models/bookmarkModel.js";
 import {verifyToken} from "../middleware/verifyToken.js";
 export const bookmarkApp = exp.Router();
 // ADD BOOKMARK

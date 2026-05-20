@@ -1,5 +1,5 @@
 import exp from "express"
-import {DoubtModel} from "../model/doubtModel.js"
+import {DoubtModel} from "../models/doubtModel.js"
 import {verifyToken} from "../middleware/verifyToken.js"
 export const doubtApp=exp.Router()
 //CREATE DOUBT

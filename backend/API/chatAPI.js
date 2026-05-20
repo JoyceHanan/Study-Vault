@@ -1,5 +1,5 @@
 import exp from "express";
-import {ChatModel} from "../model/chatModel.js";
+import {ChatModel} from "../models/chatModel.js";
 import {verifyToken} from "../middleware/verifyToken.js";
 export const chatApp = exp.Router();
 // SEND MESSAGE
