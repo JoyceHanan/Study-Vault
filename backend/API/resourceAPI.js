@@ -3,20 +3,21 @@ import {ResourceModel} from "../models/resourceModel.js"
 import {UserModel} from "../models/userModel.js"
 import {verifyToken} from "../middleware/verifyToken.js"
 export const resourceApp=exp.Router()
+import { upload } from "../middleware/multer.js";
+import { uploadToCloudinary } from "../config/uploadToCloudinary.js";
 //UPLOAD RESOURCE
-resourceApp.post("/upload",verifyToken,async(req,res)=>{
+resourceApp.post("/upload",verifyToken,upload.single("file"),async(req,res)=>{
     try{
-        const newResource=req.body
-        newResource.uploadedBy=req.user.id
-        const resourceDoc=new ResourceModel(newResource)
-        await resourceDoc.save()
-        res.status(201).json({message:"Resource uploaded successfully",payload:resourceDoc})
+        const cloudResponse=await uploadToCloudinary(req.file.buffer);
+        const resourceDoc=new ResourceModel({title:req.body.title,subject:req.body.subject,topic:req.body.topic,fileUrl:cloudResponse.secure_url,fileType:req.file.mimetype,uploadedBy:req.user.id});
+        await resourceDoc.save();
+        res.status(201).json({message:"Resource uploaded",payload:resourceDoc});
     }
     catch(err){
-        console.log(err)
-        res.status(500).json({message:"Upload failed",error:err.message})
+        console.log(err);
+        res.status(500).json({message:"Upload failed"});
     }
-})
+});
 //GET ALL RESOURCES
 resourceApp.get("/",async(req,res)=>{
     try{
