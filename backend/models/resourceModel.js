@@ -2,10 +2,12 @@ import { Schema, model } from "mongoose";
 const resourceSchema=new Schema({
     title:{
         type:String,
-        required:[true,"Title required"]
+        required:[true,"Title required"],
+        trim:true
     },
     description:{
-        type:String
+        type:String,
+        default:""
     },
     subject:{
         type:String,
@@ -57,5 +59,10 @@ const resourceSchema=new Schema({
     versionKey:false,
     strict:"throw"
 })
-
+//SEARCH OPTIMIZATION
+resourceSchema.index({
+    title:"text",
+    subject:"text",
+    topic:"text"
+});
 export const ResourceModel=model("resource",resourceSchema)
