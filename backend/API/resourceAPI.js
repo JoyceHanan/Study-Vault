@@ -11,7 +11,20 @@ import cloudinary from "../config/cloudinary.js";
 resourceApp.post("/upload",verifyToken,upload.single("file"),async(req,res)=>{
     try{
         const cloudResponse = await uploadToCloudinary(req.file.buffer,req.file.originalname);
-        const resourceDoc=new ResourceModel({title:req.body.title,subject:req.body.subject,topic:req.body.topic,fileUrl:cloudResponse.secure_url,fileType:req.file.mimetype,uploadedBy:req.user.id});
+        const resourceDoc = new ResourceModel({
+  title: req.body.title,
+  description: req.body.description,
+  subject: req.body.subject,
+  unit: req.body.unit,
+  topic: req.body.topic,
+  semester: req.body.semester,
+  tags: req.body.tags
+    ? req.body.tags.split(",").map(tag => tag.trim())
+    : [],
+  fileUrl: cloudResponse.secure_url,
+  fileType: req.file.mimetype,
+  uploadedBy: req.user.id,
+});
         await resourceDoc.save();
         res.status(201).json({message:"Resource uploaded",payload:resourceDoc});
     }

@@ -12,7 +12,7 @@ import {
   textInput,
   mutedText,
 } from "../styles/common";
-
+import { Link } from "react-router";
 function Resources() {
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
@@ -135,9 +135,9 @@ function Resources() {
                   key={resource._id}
                   className={card}
                 >
-                  <h3 className={titleLg}>
-                    {resource.title}
-                  </h3>
+                  <Link to={`/resources/${resource._id}`} className="block hover:opacity-80" > 
+                  <h3 className={titleLg}> {resource.title} </h3> 
+                  </Link>
 
                   <p className={`${bodyText} mt-3`}>
                     {resource.description}
