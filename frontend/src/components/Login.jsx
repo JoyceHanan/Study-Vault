@@ -7,20 +7,17 @@ import {
   mutedText,
   textInput,
   primaryBtn,
-  tertiaryBtn,
-  googleButtonContainer,
+  errorText,
+  labelUppercase,
 } from "../styles/common";
 
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router";
-import { useAuthStore } from "../store/authStore.js";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import { useAuthStore } from "../store/authStore";
 
 function Login() {
-
   const {
     register,
     handleSubmit,
@@ -29,212 +26,99 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const {
-    login,
-    loading,
-    isAuthenticated,
-  } = useAuthStore((state) => state);
+  const { login, loading, isAuthenticated } = useAuthStore((state) => state);
 
-  const onUserLogin = (userCredObj) => {
-    login(userCredObj);
+  const onUserLogin = async (userCredObj) => {
+    const success = await login(userCredObj);
+    if (!success) {
+      toast.error("Login failed");
+    }
   };
 
   useEffect(() => {
-
     if (isAuthenticated) {
-
-      toast.success(
-        "Login successful"
-      );
-
+      toast.success("Login successful");
       navigate("/");
-
     }
-
-  }, [isAuthenticated]);
-
-  if (loading) {
-
-    return (
-      <p className="text-center py-10">
-        Loading...
-      </p>
-    );
-
-  }
+  }, [isAuthenticated, navigate]);
 
   return (
-    <div
-      className={`${pageWrapper} ${centeredFlex} px-4 py-20`}
-    >
+    <div className={`${pageWrapper} ${centeredFlex} px-4`}>
+      <div className="w-full max-w-md">
 
-      <div
-        className={`${card} w-full max-w-md shadow-sm`}
-      >
-
-        {/* Heading */}
-
-        <div className="text-center mb-8">
-
-          <h1 className={heroTitle}>
-            Welcome Back
-          </h1>
-
-          <p className={`${bodyText} mt-3`}>
-            Sign in to access your notes,
-            resources, discussions and study rooms.
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className={heroTitle}>Sign in</h1>
+          <p className={`${bodyText} mt-4`}>
+            Access your notes, resources, discussions and study groups.
           </p>
-
         </div>
 
-        {/* Form */}
+        {/* Card */}
+        <div className={card}>
+          <form onSubmit={handleSubmit(onUserLogin)} className="space-y-5">
 
-        <form
-          onSubmit={handleSubmit(onUserLogin)}
-          className="space-y-5"
-        >
+            {/* Email */}
+            <div>
+              <label className={`block mb-2 ${labelUppercase}`}>
+                Email
+              </label>
+              <input
+                type="email"
+                className={textInput}
+                placeholder="you@example.com"
+                {...register("email", {
+                  required: "Email is required",
+                })}
+              />
+              {errors.email && (
+                <p className={errorText}>{errors.email.message}</p>
+              )}
+            </div>
 
-          {/* Email */}
+            {/* Password */}
+            <div>
+              <label className={`block mb-2 ${labelUppercase}`}>
+                Password
+              </label>
+              <input
+                type="password"
+                className={textInput}
+                placeholder="••••••••"
+                {...register("password", {
+                  required: "Password is required",
+                })}
+              />
+              {errors.password && (
+                <p className={errorText}>{errors.password.message}</p>
+              )}
+            </div>
 
-          <div>
-
-            <label className="block text-sm font-medium mb-2 text-black">
-              Email
-            </label>
-
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className={textInput}
-              {...register("email", {
-                required: true,
-              })}
-            />
-
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                Email is required
-              </p>
-            )}
-
-          </div>
-
-          {/* Password */}
-
-          <div>
-
-            <label className="block text-sm font-medium mb-2 text-black">
-              Password
-            </label>
-
-            <input
-              type="password"
-              placeholder="••••••••"
-              className={textInput}
-              {...register("password", {
-                required: true,
-              })}
-            />
-
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                Password is required
-              </p>
-            )}
-
-          </div>
-
-          {/* Forgot Password */}
-
-          <div className="flex justify-end">
-
+            {/* Submit */}
             <button
-              type="button"
-              className={tertiaryBtn}
+              type="submit"
+              disabled={loading}
+              className={`${primaryBtn} w-full mt-2`}
             >
-              Forgot Password?
+              {loading ? "Signing in…" : "Sign In"}
             </button>
+          </form>
 
+          {/* Footer link */}
+          <div className="mt-6 text-center">
+            <p className={mutedText}>
+              Don't have an account?{" "}
+              <NavLink
+                to="/register"
+                className="font-bold text-[#262626] tracking-[0.5px] hover:text-[#1c69d4] transition-colors duration-150"
+              >
+                Create one
+              </NavLink>
+            </p>
           </div>
-
-          {/* Login Button */}
-
-          <button
-            type="submit"
-            className={`${primaryBtn} w-full`}
-          >
-            Sign In
-          </button>
-
-          {/* Google Login */}
-
-          <div className={googleButtonContainer}>
-
-            <GoogleLogin
-              onSuccess={async (
-                credentialResponse
-              ) => {
-
-                try {
-
-                  await axios.post(
-                    "/user-api/google-login",
-                    {
-                      token:
-                        credentialResponse.credential,
-                    },
-                    {
-                      withCredentials: true,
-                    }
-                  );
-
-                  window.location.href = "/";
-
-                }
-                catch (err) {
-
-                  console.log(err);
-
-                  toast.error(
-                    "Google login failed"
-                  );
-
-                }
-
-              }}
-
-              onError={() => {
-
-                toast.error(
-                  "Google Login Failed"
-                );
-
-              }}
-            />
-
-          </div>
-
-        </form>
-
-        {/* Footer */}
-
-        <p
-          className={`${mutedText} text-center mt-6`}
-        >
-
-          Don't have an account?{" "}
-
-          <NavLink
-            to="/register"
-            className="font-medium text-black hover:underline"
-          >
-            Create one
-          </NavLink>
-
-        </p>
+        </div>
 
       </div>
-
     </div>
   );
 }

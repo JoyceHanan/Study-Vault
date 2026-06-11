@@ -1,207 +1,289 @@
-// ========================= COLORS =========================
+/**
+ * common.js — BMW Design System Style Tokens
+ * Based on BMW Type Next Latin / corporate blue design language.
+ * All values use Tailwind utility classes with inline CSS where needed.
+ *
+ * Font note: BMW Type Next Latin is a licensed typeface.
+ * Substitute: Inter (700 / 300) — add to your project via Google Fonts or local.
+ */
 
-export const colors = {
-  primary: "bg-black",
-  primaryHover: "hover:bg-[#222222]",
-
-  ink: "text-[#0a0a0a]",
-  charcoal: "text-[#222222]",
-  slate: "text-[#45515e]",
-  steel: "text-[#5f5f5f]",
-  muted: "text-[#8e8e93]",
-
-  coral: "bg-[#ff5530]",
-  magenta: "bg-[#ea5ec1]",
-  blue: "bg-[#1456f0]",
-  purple: "bg-[#a855f7]",
-
-  canvas: "bg-white",
-  surface: "bg-[#f7f8fa]",
-  surfaceSoft: "bg-[#f2f3f5]",
-
-  border: "border border-[#e5e7eb]",
-  borderSoft: "border border-[#eaecf0]",
-
-  success: "text-[#1ba673]",
-  successBg: "bg-[#e8ffea]",
-
-  onDark: "text-white",
-  footerBg: "bg-[#0a0a0a]",
-};
-
-
-// ========================= LAYOUT =========================
+// ─── Layout ──────────────────────────────────────────────────────────────────
 
 export const pageWrapper =
-  "min-h-screen bg-white overflow-x-hidden";
-
-export const sectionWrapper =
-  "py-12 sm:py-16 lg:py-20";
-
-export const container =
-  "w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
+  "min-h-screen bg-white font-sans";
 
 export const centeredFlex =
   "flex items-center justify-center";
 
-export const flexBetween =
-  "flex items-center justify-between";
+export const container =
+  "w-full max-w-[1440px] mx-auto px-8";
 
+export const sectionPadding =
+  "py-20"; // spacing.section = 80px
 
-// ========================= TYPOGRAPHY =========================
+export const sectionPaddingLight =
+  "py-16"; // 64px — footer rhythm
 
-export const heroTitle =
-  "text-4xl sm:text-6xl lg:text-[80px] font-semibold tracking-[-2px] text-[#0a0a0a] leading-[1.1]";
+// ─── Surfaces ────────────────────────────────────────────────────────────────
 
-export const displayTitle =
-  "text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#0a0a0a]";
+/** Default page surface — #ffffff */
+export const surfaceCanvas =
+  "bg-white";
 
-export const sectionTitle =
-  "text-3xl sm:text-4xl font-semibold tracking-tight text-[#0a0a0a]";
+/** Soft grey — footer, sub-nav bands — #f7f7f7 */
+export const surfaceSoft =
+  "bg-[#f7f7f7]";
 
-export const cardTitle =
-  "text-xl sm:text-2xl font-semibold text-[#0a0a0a]";
+/** Light plate behind model card photos — #fafafa */
+export const surfaceCard =
+  "bg-[#fafafa]";
 
-export const bodyText =
-  "text-sm sm:text-base leading-7 text-[#45515e]";
+/** Slightly heavier section divider — #ebebeb */
+export const surfaceStrong =
+  "bg-[#ebebeb]";
 
-export const smallText =
-  "text-sm text-[#5f5f5f]";
+/** Dark navy hero bands — #1a2129 */
+export const surfaceDark =
+  "bg-[#1a2129]";
 
-export const mutedText =
-  "text-sm text-[#8e8e93]";
+/** Elevated card on dark hero — #262e38 */
+export const surfaceDarkElevated =
+  "bg-[#262e38]";
 
-export const captionText =
-  "text-[13px] text-[#5f5f5f]";
+// ─── Cards ───────────────────────────────────────────────────────────────────
 
-export const navLink =
-  "text-sm font-medium text-[#5f5f5f] hover:text-black transition";
-
-
-// ========================= BUTTONS =========================
-
-export const primaryBtn =
-  "h-11 px-6 rounded-full bg-black hover:bg-[#222222] text-white text-sm font-semibold transition";
-
-export const secondaryBtn =
-  "h-11 px-6 rounded-full bg-white border border-black text-black text-sm font-semibold";
-
-export const tertiaryBtn =
-  "h-11 px-6 rounded-full bg-white border border-[#e5e7eb] text-black text-sm font-semibold";
-
-
-// ========================= CARDS =========================
-
+/** Standard content card — white, square corners, no shadow */
 export const card =
-  "bg-white border border-[#e5e7eb] rounded-2xl p-6";
+  "bg-white border border-[#e6e6e6] p-6";
 
+/** Model card — white plate, 0px radius */
+export const modelCard =
+  "bg-white p-6";
+
+/** Model card photo plate — soft grey fill, edge-to-edge */
+export const modelCardPhoto =
+  "bg-[#fafafa] w-full";
+
+/** Feature / lifestyle card */
 export const featureCard =
-  "bg-[#f7f8fa] rounded-2xl p-6";
+  "bg-white p-6";
 
-export const coralCard =
-  "bg-[#ff5530] text-white rounded-[32px] p-8";
+/** Inventory card — denser padding */
+export const inventoryCard =
+  "bg-white p-4";
 
-export const magentaCard =
-  "bg-[#ea5ec1] text-white rounded-[32px] p-8";
+/** Dark hero band */
+export const heroBandDark =
+  "bg-[#1a2129] text-white px-20 py-20 w-full";
 
-export const blueCard =
-  "bg-[#1456f0] text-white rounded-[32px] p-8";
+/** Light hero photo band */
+export const heroPhotoBand =
+  "bg-white text-[#262626] px-20 py-20 w-full";
 
-export const purpleCard =
-  "bg-[#a855f7] text-white rounded-[32px] p-8";
+/** Pre-footer CTA band */
+export const ctaBandPhoto =
+  "bg-[#1a2129] text-white px-20 py-20 w-full text-center";
 
+// ─── Typography ──────────────────────────────────────────────────────────────
 
-// ========================= INPUTS =========================
+/** display-xl — 64px / 700 — hero model name */
+export const displayXl =
+  "text-[64px] font-bold leading-[1.05] tracking-normal text-[#262626]";
 
+/** display-lg — 48px / 700 — section heads */
+export const displayLg =
+  "text-[48px] font-bold leading-[1.1] tracking-normal text-[#262626]";
+
+/** display-md — 32px / 700 — sub-section / CTA band */
+export const displayMd =
+  "text-[32px] font-bold leading-[1.15] tracking-normal text-[#262626]";
+
+/** display-sm — 24px / 700 — spec cell value */
+export const displaySm =
+  "text-[24px] font-bold leading-[1.25] tracking-normal text-[#262626]";
+
+/** title-lg — 20px / 700 — card group title */
+export const titleLg =
+  "text-[20px] font-bold leading-[1.3] tracking-normal text-[#262626]";
+
+/** title-md — 18px / 700 — model card title, intro paragraphs */
+export const titleMd =
+  "text-[18px] font-bold leading-[1.4] tracking-normal text-[#262626]";
+
+/** title-sm — 16px / 700 — inventory card title */
+export const titleSm =
+  "text-[16px] font-bold leading-[1.4] tracking-normal text-[#262626]";
+
+/** body-md — 16px / 300 Light — default running text */
+export const bodyText =
+  "text-[16px] font-light leading-[1.55] text-[#3c3c3c]";
+
+/** body-sm — 14px / 300 Light — footer, fine print */
+export const bodyTextSm =
+  "text-[14px] font-light leading-[1.55] text-[#3c3c3c]";
+
+/** caption — 12px / 400 — photo captions, meta */
+export const captionText =
+  "text-[12px] font-normal leading-[1.4] tracking-[0.5px] text-[#6b6b6b]";
+
+/** label-uppercase — 13px / 700 / 1.5px tracking — "LEARN MORE" CTAs, tabs */
+export const labelUppercase =
+  "text-[13px] font-bold leading-[1.3] tracking-[1.5px] uppercase text-[#262626]";
+
+/** nav-link — 14px / 400 */
+export const navLink =
+  "text-[14px] font-normal leading-[1.4] tracking-[0.3px] text-[#262626]";
+
+// ─── Semantic text helpers ────────────────────────────────────────────────────
+
+/** Primary/dark text — #262626 */
+export const heroTitle =
+  "text-[48px] font-bold leading-[1.1] tracking-normal text-[#262626]";
+
+/** Muted text — #6b6b6b */
+export const mutedText =
+  "text-[14px] font-light leading-[1.55] text-[#6b6b6b]";
+
+/** On-dark heading — white */
+export const onDarkTitle =
+  "text-[48px] font-bold leading-[1.1] tracking-normal text-white";
+
+/** On-dark body — soft white #bbbbbb */
+export const onDarkMuted =
+  "text-[14px] font-light leading-[1.55] text-[#bbbbbb]";
+
+/** Error text */
+export const errorText =
+  "text-[#dc2626] text-sm font-light mt-1";
+
+// ─── Buttons ─────────────────────────────────────────────────────────────────
+
+/**
+ * button-primary — BMW Blue, 0px radius, 48px height
+ * Pair with: disabled:bg-[#d6d6d6] disabled:text-[#6b6b6b] disabled:cursor-not-allowed
+ */
+export const primaryBtn =
+  "inline-flex items-center justify-center bg-[#1c69d4] text-white text-[14px] font-bold tracking-[0.5px] px-8 h-12 hover:bg-[#0653b6] transition-colors duration-150 disabled:bg-[#d6d6d6] disabled:text-[#6b6b6b] disabled:cursor-not-allowed";
+
+/**
+ * button-secondary — white with hairline border, 0px radius
+ */
+export const secondaryBtn =
+  "inline-flex items-center justify-center bg-white text-[#262626] text-[14px] font-bold tracking-[0.5px] px-8 h-12 border border-[#cccccc] hover:border-[#262626] transition-colors duration-150";
+
+/**
+ * button-secondary-on-dark — transparent with white border
+ */
+export const secondaryBtnOnDark =
+  "inline-flex items-center justify-center bg-transparent text-white text-[14px] font-bold tracking-[0.5px] px-8 h-12 border border-white hover:bg-white/10 transition-colors duration-150";
+
+/**
+ * button-text-link — uppercase inline CTA, no background
+ * Usage: <button className={textLinkBtn}>LEARN MORE ›</button>
+ */
+export const textLinkBtn =
+  "inline-flex items-center gap-1 bg-transparent text-[#262626] text-[13px] font-bold tracking-[1.5px] uppercase hover:text-[#1c69d4] transition-colors duration-150";
+
+// ─── Inputs ───────────────────────────────────────────────────────────────────
+
+/**
+ * text-input — 0px radius, 48px height, hairline border
+ * Focus: border thickens to ink (#262626)
+ */
 export const textInput =
-  "w-full h-11 px-4 rounded-md border border-[#e5e7eb] bg-white text-black outline-none focus:ring-2 focus:ring-[#1456f0]";
+  "w-full bg-white text-[#262626] text-[16px] font-light leading-[1.55] px-4 h-12 border border-[#e6e6e6] outline-none focus:border-[#262626] transition-colors duration-150 placeholder:text-[#9a9a9a]";
 
-export const searchInput =
-  "w-full h-10 px-4 rounded-md border border-[#e5e7eb] bg-[#f7f8fa] text-[#5f5f5f]";
+// ─── Filter / Tag Chips ───────────────────────────────────────────────────────
 
+/** Inactive filter chip */
+export const filterChip =
+  "inline-flex items-center bg-white text-[#262626] text-[12px] font-normal tracking-[0.5px] px-[14px] py-2 border border-[#cccccc] cursor-pointer hover:border-[#262626] transition-colors duration-150";
 
-// ========================= BADGES =========================
+/** Active filter chip */
+export const filterChipActive =
+  "inline-flex items-center bg-[#262626] text-white text-[12px] font-normal tracking-[0.5px] px-[14px] py-2 border border-[#262626] cursor-pointer";
 
-export const badge =
-  "inline-flex items-center px-3 py-1 rounded-full bg-[#f2f3f5] text-[12px] font-semibold text-black";
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
 
-export const successBadge =
-  "inline-flex items-center px-3 py-1 rounded-full bg-[#e8ffea] text-[#1ba673] text-[12px] font-semibold";
+/** Inactive category tab */
+export const categoryTab =
+  "text-[13px] font-bold tracking-[1.5px] uppercase text-[#6b6b6b] py-3 border-b-2 border-transparent hover:text-[#262626] transition-colors duration-150 cursor-pointer";
 
-export const newBadge =
-  "inline-flex items-center px-3 py-1 rounded-full bg-[#ff5530] text-white text-[12px] font-semibold";
+/** Active category tab */
+export const categoryTabActive =
+  "text-[13px] font-bold tracking-[1.5px] uppercase text-[#262626] py-3 border-b-2 border-[#262626] cursor-pointer";
 
+// ─── Spec Cell ────────────────────────────────────────────────────────────────
 
-// ========================= NAVBAR =========================
+export const specCell =
+  "p-6 border-b border-[#e6e6e6]";
 
-export const navbar =
-  "sticky top-0 z-50 h-16 bg-white border-b border-[#eaecf0]";
+export const specValue =
+  "text-[24px] font-bold leading-[1.25] text-[#262626]";
 
-export const navContainer =
-  "max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between";
+export const specLabel =
+  "text-[13px] font-bold tracking-[1.5px] uppercase text-[#6b6b6b] mt-1";
 
-export const navLogo =
-  "text-2xl sm:text-3xl font-semibold tracking-tight text-black";
+// ─── Dividers ─────────────────────────────────────────────────────────────────
 
+/** 1px hairline divider */
+export const hairline =
+  "border-t border-[#e6e6e6]";
 
-// ========================= HERO =========================
+/** M tricolor stripe — M-model contexts only */
+export const mStripeDivider =
+  "h-1 w-full";
+// Render as: <div className={mStripeDivider} style={{ background: 'linear-gradient(to right, #0066b1 33.3%, #1c69d4 33.3% 66.6%, #e22718 66.6%)' }} />
 
-export const heroSection =
-  "relative py-20 sm:py-28 lg:py-32 bg-white";
+// ─── Navigation ───────────────────────────────────────────────────────────────
 
-export const heroContent =
-  "max-w-5xl mx-auto text-center";
+export const topNav =
+  "sticky top-0 z-50 w-full bg-white h-16 flex items-center px-8 border-b border-[#e6e6e6]";
 
-
-// ========================= RESOURCES =========================
-
-export const resourceGrid =
-  "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6";
-
-export const resourceCard =
-  "bg-white border border-[#e5e7eb] rounded-2xl p-6";
-
-
-// ========================= DASHBOARD =========================
-
-export const dashboardGrid =
-  "grid grid-cols-1 lg:grid-cols-2 gap-6";
-
-export const statsCard =
-  "bg-white border border-[#e5e7eb] rounded-2xl p-6";
-
-export const statNumber =
-  "text-4xl font-semibold tracking-tight text-black";
-
-
-// ========================= PROFILE =========================
-
-export const profileWrapper =
-  "bg-white border border-[#e5e7eb] rounded-2xl p-8";
-
-export const profileGrid =
-  "grid grid-cols-1 md:grid-cols-2 gap-8";
-
-
-// ========================= CHAT =========================
-
-export const chatContainer =
-  "bg-white border border-[#e5e7eb] rounded-2xl h-[600px] flex flex-col";
-
-export const chatMessage =
-  "bg-[#f7f8fa] rounded-xl px-4 py-2";
-
-
-// ========================= WHITEBOARD =========================
-
-export const whiteboardContainer =
-  "bg-white border border-[#e5e7eb] rounded-2xl overflow-hidden";
-
-
-// ========================= FOOTER =========================
+// ─── Footer ───────────────────────────────────────────────────────────────────
 
 export const footer =
-  "bg-black text-white py-16";
+  "bg-[#f7f7f7] text-[#3c3c3c] py-16 px-8";
 
 export const footerLink =
-  "text-[#a8aab2] hover:text-white transition";
+  "text-[14px] font-light leading-[1.55] text-[#6b6b6b] hover:text-[#262626] transition-colors duration-150";
+
+// ─── Configurator ─────────────────────────────────────────────────────────────
+
+/** Inactive option tile */
+export const configuratorTile =
+  "bg-white text-[#262626] text-[16px] font-light px-6 py-4 border border-[#e6e6e6] cursor-pointer hover:border-[#262626] transition-colors duration-150";
+
+/** Selected option tile */
+export const configuratorTileSelected =
+  "bg-white text-[#262626] text-[16px] font-light px-6 py-4 border-2 border-[#1c69d4] cursor-pointer";
+
+// ─── Color Reference (non-Tailwind use, e.g. inline styles / charts) ──────────
+
+export const colors = {
+  primary: "#1c69d4",
+  primaryActive: "#0653b6",
+  primaryDisabled: "#d6d6d6",
+  ink: "#262626",
+  body: "#3c3c3c",
+  bodyStrong: "#1a1a1a",
+  muted: "#6b6b6b",
+  mutedSoft: "#9a9a9a",
+  hairline: "#e6e6e6",
+  hairlineStrong: "#cccccc",
+  canvas: "#ffffff",
+  surfaceSoft: "#f7f7f7",
+  surfaceCard: "#fafafa",
+  surfaceStrong: "#ebebeb",
+  surfaceDark: "#1a2129",
+  surfaceDarkElevated: "#262e38",
+  onPrimary: "#ffffff",
+  onDark: "#ffffff",
+  onDarkSoft: "#bbbbbb",
+  mBlueLight: "#0066b1",
+  mBlueDark: "#1c69d4",
+  mRed: "#e22718",
+  success: "#22c55e",
+  warning: "#f59e0b",
+  error: "#dc2626",
+};
