@@ -5,18 +5,20 @@ import {verifyToken} from "../middleware/verifyToken.js"
 export const resourceApp=exp.Router()
 import { upload } from "../config/multer.js";
 import { uploadToCloudinary } from "../config/cloudinaryUpload.js";
+import cloudinary from "../config/cloudinary.js";
+
 //UPLOAD RESOURCE
 resourceApp.post("/upload",verifyToken,upload.single("file"),async(req,res)=>{
     try{
-        const cloudResponse=await uploadToCloudinary(req.file.buffer);
+        const cloudResponse = await uploadToCloudinary(req.file.buffer,req.file.originalname);
         const resourceDoc=new ResourceModel({title:req.body.title,subject:req.body.subject,topic:req.body.topic,fileUrl:cloudResponse.secure_url,fileType:req.file.mimetype,uploadedBy:req.user.id});
         await resourceDoc.save();
         res.status(201).json({message:"Resource uploaded",payload:resourceDoc});
     }
-    catch(err){
-        console.log(err);
-        res.status(500).json({message:"Upload failed"});
-    }
+   catch(err){
+    console.log(err);
+    res.status(500).json({message:"Upload failed",error:err.message});
+}
 });
 //GET ALL RESOURCES
 resourceApp.get("/",async(req,res)=>{
@@ -131,17 +133,37 @@ resourceApp.get("/search",async(req,res)=>{
     }
 })
 //DOWNLOAD RESOURCE
-resourceApp.get("/download/:id",verifyToken,async(req,res)=>{
-    try{
-        const resource=await ResourceModel.findById(req.params.id)
-        if(!resource){
-            return res.status(404).json({message:"Resource not found"})
-        }
-        resource.downloads+=await resource.save()
-        await UserModel.findByIdAndUpdate(req.user.id,{$addToSet:{downloads:resource._id}})
-        res.status(200).json({message:"Download started",fileUrl:resource.fileUrl})
+resourceApp.get("/download/:id", verifyToken, async (req, res) => {
+  try {
+    const resource = await ResourceModel.findById(req.params.id);
+
+    if (!resource) {
+      return res.status(404).json({
+        message: "Resource not found",
+      });
     }
-    catch(err){
-        res.status(500).json({message:"Download failed"})
-    }
-})
+
+    resource.downloads += 1;
+    await resource.save();
+
+    await UserModel.findByIdAndUpdate(
+      req.user.id,
+      {
+        $addToSet: {
+          downloads: resource._id,
+        },
+      }
+    );
+
+    res.status(200).json({
+      message: "Download started",
+      fileUrl: resource.fileUrl,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message: "Download failed",
+    });
+  }
+});

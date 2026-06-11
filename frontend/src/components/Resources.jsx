@@ -22,7 +22,7 @@ function Resources() {
   const getResources = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:6000/resource-api"
+        "http://localhost:5000/resource-api"
       );
 
       setResources(res.data.payload || []);
@@ -51,7 +51,7 @@ function Resources() {
   const handleUpvote = async (id) => {
     try {
       await axios.post(
-        `http://localhost:6000/resource-api/${id}/upvote`,
+        `http://localhost:5000/resource-api/${id}/upvote`,
         {},
         { withCredentials: true }
       );
@@ -65,7 +65,7 @@ function Resources() {
   const handleDownvote = async (id) => {
     try {
       await axios.post(
-        `http://localhost:6000/resource-api/${id}/downvote`,
+        `http://localhost:5000/resource-api/${id}/downvote`,
         {},
         { withCredentials: true }
       );
@@ -76,12 +76,28 @@ function Resources() {
     }
   };
 
-  const handleDownload = (id) => {
-    window.open(
-      `http://localhost:6000/resource-api/download/${id}`,
-      "_blank"
+  const handleDownload = async (id) => {
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/resource-api/download/${id}`,
+      {
+        withCredentials: true,
+      }
     );
-  };
+
+    const link = document.createElement("a");
+    link.href = res.data.fileUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    getResources(); // refresh download count
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   return (
     <div className={pageWrapper}>
