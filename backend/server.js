@@ -38,7 +38,7 @@ config()
  app.use("/notification-api",notificationApp)
  app.use("/whiteboard-api",whiteboardApp)
  app.use("/report-api",reportApp)
- const port=process.env.PORT||6000
+ const port=process.env.PORT||5000
  const connectionDb=async()=>{
     try{
         await connect(process.env.DB_URL);

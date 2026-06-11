@@ -9,28 +9,65 @@ const {sign,verify}=jwt
 export const userApp=exp.Router()
 const client=new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 //registration 
-userApp.post("/register",async(req,res)=>{
-    try{
-        const newUser=req.body
-        newUser.password=await hash(newUser.password,12)
-        const userDoc=new UserModel(newUser)
-        await userDoc.save()
-        //auto-login user after registration
-        const token=sign({id:userDoc._id,email:userDoc.email},process.env.JWT_SECRET,{expiresIn:"2h"});
-        res.cookie("token",token,{
-            httpOnly:true,
-            sameSite:"none",
-            secure:true,
-        })
-        let userObj=userDoc.toObject()
-        delete userObj.password
-        res.status(201).json({message:"User has registered",payload:userObj})
+// REGISTER
+
+userApp.post("/register", async (req, res) => {
+  try {
+
+    const {
+      name,
+      email,
+      password,
+      college,
+      branch,
+      semester,
+    } = req.body;
+
+    const existingUser = await UserModel.findOne({
+      email,
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "Email already registered",
+      });
     }
-    catch(err){
-        console.log("Registration error",err)
-        res.status(500).json({message:"Registration failed",error:err.message})
-    }
-})
+
+    const hashedPassword = await hash(
+      password,
+      12
+    );
+
+    const userDoc = await UserModel.create({
+      name,
+      email,
+      password: hashedPassword,
+      college,
+      branch,
+      semester,
+    });
+
+    let userObj = userDoc.toObject();
+
+    delete userObj.password;
+    delete userObj.refreshToken;
+
+    res.status(201).json({
+      message: "User registered successfully",
+      payload: userObj,
+    });
+
+  } catch (err) {
+
+    console.log("Registration Error:", err);
+
+    res.status(500).json({
+      message: "Registration failed",
+      error: err.message,
+    });
+
+  }
+});
 //login
 userApp.post("/login",async(req,res)=>{
     const{email,password}=req.body

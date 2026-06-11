@@ -3,8 +3,8 @@ import {ResourceModel} from "../models/resourceModel.js"
 import {UserModel} from "../models/userModel.js"
 import {verifyToken} from "../middleware/verifyToken.js"
 export const resourceApp=exp.Router()
-import { upload } from "../middleware/multer.js";
-import { uploadToCloudinary } from "../config/uploadToCloudinary.js";
+import { upload } from "../config/multer.js";
+import { uploadToCloudinary } from "../config/cloudinaryUpload.js";
 //UPLOAD RESOURCE
 resourceApp.post("/upload",verifyToken,upload.single("file"),async(req,res)=>{
     try{

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 axios.defaults.baseURL =
-  "http://localhost:6000";
+  "http://localhost:5000";
 
 axios.defaults.withCredentials = true;
 export const useAuthStore = create((set) => ({

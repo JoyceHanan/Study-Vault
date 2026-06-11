@@ -18,16 +18,9 @@ import { toast } from "react-hot-toast";
 import { useAuthStore } from "../store/authStore";
 
 function Login() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
+  const {register,handleSubmit,formState:{errors},}=useForm();
   const navigate = useNavigate();
-
-  const { login, loading, isAuthenticated } = useAuthStore((state) => state);
-
+  const {login,loading,isAuthenticated}=useAuthStore((state)=>state);
   const onUserLogin = async (userCredObj) => {
     const success = await login(userCredObj);
     if (!success) {
