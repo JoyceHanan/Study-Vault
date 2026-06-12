@@ -49,11 +49,6 @@ const resourceSchema=new Schema({
             ref:"user"
         }
     ],
-    downloads:{
-        type:Number,
-        default:0
-    }
-
 },{
     timestamps:true,
     versionKey:false,

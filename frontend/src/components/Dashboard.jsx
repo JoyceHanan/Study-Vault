@@ -153,11 +153,6 @@ function Dashboard() {
               </p>
 
               <p className={bodyText}>
-                📥 Downloads:{" "}
-                {dashboard.downloads}
-              </p>
-
-              <p className={bodyText}>
                 ⭐ Saved Resources:{" "}
                 {dashboard.savedResources}
               </p>

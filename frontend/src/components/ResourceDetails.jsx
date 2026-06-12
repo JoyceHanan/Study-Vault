@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 
 import {
@@ -15,7 +15,7 @@ import {
   primaryBtn,
   secondaryBtn,
 } from "../styles/common";
-
+import { useAuthStore } from "../store/authStore";
 // Returns a URL that opens the file in-browser
 const getViewerUrl = (fileUrl, fileType) => {
   if (!fileUrl) return null;
@@ -46,6 +46,9 @@ const getViewerUrl = (fileUrl, fileType) => {
 };
 
 function ResourceDetails() {
+  const currentUser = useAuthStore(
+  (state) => state.currentUser
+);
   const { id } = useParams();
 
   const [resource, setResource] = useState(null);
@@ -100,6 +103,30 @@ function ResourceDetails() {
     window.open(viewerUrl, "_blank");
   };
 
+  const navigate = useNavigate();
+
+const handleDelete = async () => {
+  if (
+    !window.confirm(
+      "Delete this resource?"
+    )
+  )
+    return;
+
+  try {
+    await axios.delete(
+      `http://localhost:5000/resource-api/${id}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    navigate("/resources");
+
+  } catch (err) {
+    console.log(err);
+  }
+};
   const handleDownload = () => {
     if (!resource?.fileUrl) return;
     // Force download by creating a temp anchor
@@ -173,53 +200,93 @@ function ResourceDetails() {
               </p>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-8">
-              <div className={card}>
-                <h3 className={titleLg}>👍</h3>
-                <p>{resource.upvotes?.length || 0}</p>
-              </div>
 
-              <div className={card}>
-                <h3 className={titleLg}>👎</h3>
-                <p>{resource.downvotes?.length || 0}</p>
-              </div>
-
-              <div className={card}>
-                <h3 className={titleLg}>📥</h3>
-                <p>{resource.downloads || 0}</p>
-              </div>
-            </div>
 
             {/* Actions */}
             <div className="flex flex-wrap gap-4 mt-8">
+
+              {/* Upvote */}
               <button
                 onClick={handleUpvote}
-                className={primaryBtn}
+                className="flex items-center gap-2 px-2 h-10 transition-colors duration-150"
               >
-                👍 Upvote
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22" height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z" />
+                  <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                </svg>
+                <span className="text-[14px] font-bold tracking-[0.5px]">
+                  {resource.upvotes?.length || 0}
+                </span>
               </button>
 
+              {/* Downvote */}
               <button
                 onClick={handleDownvote}
-                className="px-6 h-12 border border-[#d6d6d6]"
+                className="flex items-center gap-2 px-2 h-10 transition-colors duration-150"
               >
-                👎 Downvote
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22" height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z" />
+                  <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" />
+                </svg>
+                <span className="text-[14px] font-bold tracking-[0.5px]">
+                  {resource.downvotes?.length || 0}
+                </span>
               </button>
 
               <button
                 onClick={handleOpenResource}
-                className="px-6 h-12 border border-[#d6d6d6]"
+                className={primaryBtn}
               >
-                📖 Open Resource
+                Open Resource
               </button>
 
               <button
                 onClick={handleDownload}
                 className={secondaryBtn}
               >
-                📥 Download
+                Download
               </button>
+              <button
+  onClick={handleDelete}
+  title="Delete Resource"
+  className="flex items-center justify-center w-12 h-12 rounded-md transition-all duration-150 hover:border-red-500 hover:text-red-500"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M3 6h18" />
+    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+  </svg>
+</button>
             </div>
 
           </div>
