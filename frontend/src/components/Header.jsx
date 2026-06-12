@@ -49,6 +49,17 @@ function Header() {
 
           {!currentUser ? (
             <>
+               <NavLink
+                to="/register"
+                className={({ isActive }) =>
+                  isActive
+                    ? activeLink
+                    : normalLink
+                }
+              >
+                Register
+              </NavLink>
+
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
@@ -58,17 +69,6 @@ function Header() {
                 }
               >
                 Login
-              </NavLink>
-
-              <NavLink
-                to="/register"
-                className={({ isActive }) =>
-                  isActive
-                    ? activeLink
-                    : normalLink
-                }
-              >
-                Register
               </NavLink>
             </>
           ) : (
