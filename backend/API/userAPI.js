@@ -1,5 +1,6 @@
 import exp from 'express'
 import {UserModel} from "../models/userModel.js";
+import { ResourceModel } from "../models/resourceModel.js";
 import {hash,compare} from 'bcrypt';
 import {verifyToken} from "../middleware/verifyToken.js";
 import {config} from 'dotenv'
@@ -8,9 +9,7 @@ import jwt from 'jsonwebtoken'
 const {sign,verify}=jwt
 export const userApp=exp.Router()
 const client=new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-//registration 
 // REGISTER
-
 userApp.post("/register", async (req, res) => {
   try {
 
