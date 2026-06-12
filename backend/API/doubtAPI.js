@@ -26,6 +26,25 @@ doubtApp.get("/",async(req,res)=>{
         res.status(500).json({message:"Cannot fetch doubts"})
     }
 })
+// GET DOUBTS FOR A RESOURCE
+doubtApp.get("/resource/:resourceId", async (req, res) => {
+  try {
+    // doubtAPI.js — GET /resource/:resourceId
+const doubts = await DoubtModel.find({
+  resourceId: req.params.resourceId,
+})
+  .populate("askedBy", "name email")
+  .populate("answers.user", "name email"); 
+    res.status(200).json({
+      payload: doubts,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Cannot fetch doubts",
+    });
+  }
+});
 //GET DOUBT BY ID
 doubtApp.get("/:id",async(req,res)=>{
     try{
