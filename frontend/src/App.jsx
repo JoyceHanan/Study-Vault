@@ -9,9 +9,6 @@ import Resources from "./components/Resources";
 import ResourceDetails from "./components/ResourceDetails";
 import UploadResource from "./components/UploadResource";
 import Bookmarks from "./components/Bookmarks";
-import Doubts from "./components/Doubts";
-import CreateDoubt from "./components/CreateDoubt";
-import DoubtDetails from "./components/DoubtDetails";
 import Notifications from "./components/Notifications";
 import WhiteboardRooms from "./components/WhiteboardRooms";
 import Whiteboard from "./components/Whiteboard";
@@ -64,21 +61,6 @@ const router = createBrowserRouter([
       {
         path: "bookmarks",
         element: <Bookmarks />,
-      },
-
-      {
-        path: "doubts",
-        element: <Doubts />,
-      },
-
-      {
-        path: "create-doubt",
-        element: <CreateDoubt />,
-      },
-
-      {
-        path: "doubts/:id",
-        element: <DoubtDetails />,
       },
 
       {
