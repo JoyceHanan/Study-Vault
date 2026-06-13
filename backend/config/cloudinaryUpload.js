@@ -1,16 +1,17 @@
 import cloudinary from "./cloudinary.js";
 
-export const uploadToCloudinary = (buffer) => {
+export const uploadToCloudinary = (buffer, originalname) => {
   return new Promise((resolve, reject) => {
-   const stream = cloudinary.uploader.upload_stream(
-  {
-    folder: "StudyVault",
-    resource_type: "auto",
-    public_id: req.file.originalname.split(".")[0],
-    use_filename: true,
-    unique_filename: true,
-  },
-  
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "StudyVault",
+        resource_type: "raw",
+        public_id: originalname
+          ? originalname.split(".")[0]
+          : undefined,
+        use_filename: true,
+        unique_filename: true,
+      },
       (err, result) => {
         if (err) {
           console.log("UPLOAD ERROR:", err);

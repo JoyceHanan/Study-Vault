@@ -8,8 +8,6 @@ import Profile from "./components/Profile";
 import Resources from "./components/Resources";
 import ResourceDetails from "./components/ResourceDetails";
 import UploadResource from "./components/UploadResource";
-import Bookmarks from "./components/Bookmarks";
-import Notifications from "./components/Notifications";
 import WhiteboardRooms from "./components/WhiteboardRooms";
 import Whiteboard from "./components/Whiteboard";
 import ChatRoom from "./components/ChatRoom";
@@ -56,16 +54,6 @@ const router = createBrowserRouter([
       {
         path: "upload-resource",
         element: <UploadResource />,
-      },
-
-      {
-        path: "bookmarks",
-        element: <Bookmarks />,
-      },
-
-      {
-        path: "notifications",
-        element: <Notifications />,
       },
 
       {

@@ -1,6 +1,7 @@
 import exp from 'express'
 import {UserModel} from "../models/userModel.js";
 import { ResourceModel } from "../models/resourceModel.js";
+import { BookmarkModel } from "../models/bookmarkModel.js";
 import {hash,compare} from 'bcrypt';
 import {verifyToken} from "../middleware/verifyToken.js";
 import {config} from 'dotenv'
@@ -265,24 +266,26 @@ userApp.get("/saved-resources",verifyToken,async(req,res)=>{
         res.status(500).json({message:"Cannot fetch saved resources"})
     }
 })
-//dashboard
-userApp.get("/dashboard",verifyToken,async(req,res)=>{
-    try{
-        const id=req.user.id;
-        const user=await UserModel.findById(id);
-        const uploadCount=await ResourceModel.countDocuments({uploadedBy:id})
-        const dashboardData={
-        name:user.name,
-        points:user.points,
-        uploads:uploadCount,
-        savedResources:user.savedResources.length,
-        downloads:user.downloads.length,
-        badges:user.badges
-     }
-        res.status(200).json({message:"Dashboard data",payload:dashboardData})
-    }
-    catch(err){
-        console.log(err)
-        res.status(500).json({message:"Dashboard error"})
-    }
-})
+// dashboard route
+userApp.get("/dashboard", verifyToken, async (req, res) => {
+  try {
+    const id = req.user.id;
+    const user = await UserModel.findById(id);
+    const uploadCount   = await ResourceModel.countDocuments({ uploadedBy: id });
+    const bookmarkCount = await BookmarkModel.countDocuments({ userId: id });
+
+    const dashboardData = {
+      name:      user.name,
+      points:    user.points,
+      uploads:   uploadCount,
+      bookmarks: bookmarkCount,   // ← was savedResources
+      downloads: user.downloads.length,
+      badges:    user.badges,
+    };
+
+    res.status(200).json({ message: "Dashboard data", payload: dashboardData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Dashboard error" });
+  }
+});

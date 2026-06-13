@@ -6,11 +6,12 @@ export const resourceApp=exp.Router()
 import { upload } from "../config/multer.js";
 import { uploadToCloudinary } from "../config/cloudinaryUpload.js";
 import cloudinary from "../config/cloudinary.js";
+import { NotificationModel } from "../models/notificationModel.js";
 
 //UPLOAD RESOURCE
 resourceApp.post("/upload",verifyToken,upload.single("file"),async(req,res)=>{
     try{
-        const cloudResponse = await uploadToCloudinary(req.file.buffer,req.file.originalname);
+        const cloudResponse = await uploadToCloudinary(req.file.buffer, req.file.originalname);
         const resourceDoc = new ResourceModel({
   title: req.body.title,
   description: req.body.description,
@@ -107,6 +108,7 @@ resourceApp.post("/:id/upvote",verifyToken,async(req,res)=>{
         }
 
         await resource.save()
+        await NotificationModel.create({userId: resource.uploadedBy,  message: `Someone upvoted your resource "${resource.title}"`,});
         res.status(200).json({message:"Upvoted"})
     }
     catch(err){

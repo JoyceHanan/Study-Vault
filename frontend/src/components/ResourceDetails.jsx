@@ -10,6 +10,7 @@ import {
   displayLg,
   displayMd,
   titleMd,
+  titleSm,
   bodyText,
   mutedText,
   textInput,
@@ -47,7 +48,7 @@ function ReplySection({ doubtId, answers, onReplied }) {
     try {
       setSubmitting(true);
       await axios.post(
-        `http://localhost:5000/doubt-api/reply/${doubtId}`,
+        `/doubt-api/reply/${doubtId}`,
         { message: replyText },
         { withCredentials: true }
       );
@@ -63,7 +64,6 @@ function ReplySection({ doubtId, answers, onReplied }) {
 
   return (
     <div className="mt-4">
-      {/* Existing replies */}
       {answers?.length > 0 && (
         <div className="mt-2 space-y-3 pl-4 border-l-2 border-[#e6e6e6]">
           {answers.map((ans, i) => (
@@ -82,7 +82,6 @@ function ReplySection({ doubtId, answers, onReplied }) {
         </div>
       )}
 
-      {/* Reply button / inline form */}
       {!open ? (
         <button
           onClick={() => setOpen(true)}
@@ -124,17 +123,19 @@ function ResourceDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [resource, setResource] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [doubts, setDoubts] = useState([]);
+  const [resource, setResource]     = useState(null);
+  const [loading, setLoading]       = useState(true);
+  const [doubts, setDoubts]         = useState([]);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [questionTitle, setQuestionTitle] = useState("");
-  const [questionText, setQuestionText] = useState("");
+  const [questionText, setQuestionText]   = useState("");
 
   const currentUserId = currentUser?._id || currentUser?.id;
 
   const getResource = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/resource-api/${id}`);
+      const res = await axios.get(`/resource-api/${id}`);
       setResource(res.data.payload);
     } catch (err) {
       console.log(err);
@@ -145,10 +146,23 @@ function ResourceDetails() {
 
   const getDoubts = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/doubt-api/resource/${id}`
-      );
+      const res = await axios.get(`/doubt-api/resource/${id}`);
       setDoubts(res.data.payload || []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Check if this resource is already bookmarked by current user
+  const checkBookmark = async () => {
+    try {
+      const res = await axios.get("/bookmark-api/", { withCredentials: true });
+      const bookmarks = res.data.payload || [];
+      const found = bookmarks.some(
+        (b) =>
+          b.resourceId?._id === id || b.resourceId?._id?.toString() === id
+      );
+      setIsBookmarked(found);
     } catch (err) {
       console.log(err);
     }
@@ -157,27 +171,20 @@ function ResourceDetails() {
   useEffect(() => {
     getResource();
     getDoubts();
-  }, [id]);
+    if (currentUserId) checkBookmark();
+  }, [id, currentUserId]);
 
   // ── Resource actions ──
   const handleUpvote = async () => {
     try {
-      await axios.post(
-        `http://localhost:5000/resource-api/${id}/upvote`,
-        {},
-        { withCredentials: true }
-      );
+      await axios.post(`/resource-api/${id}/upvote`, {}, { withCredentials: true });
       getResource();
     } catch (err) { console.log(err); }
   };
 
   const handleDownvote = async () => {
     try {
-      await axios.post(
-        `http://localhost:5000/resource-api/${id}/downvote`,
-        {},
-        { withCredentials: true }
-      );
+      await axios.post(`/resource-api/${id}/downvote`, {}, { withCredentials: true });
       getResource();
     } catch (err) { console.log(err); }
   };
@@ -201,11 +208,32 @@ function ResourceDetails() {
   const handleDeleteResource = async () => {
     if (!window.confirm("Delete this resource? This cannot be undone.")) return;
     try {
-      await axios.delete(`http://localhost:5000/resource-api/${id}`, {
-        withCredentials: true,
-      });
+      await axios.delete(`/resource-api/${id}`, { withCredentials: true });
       navigate("/resources");
     } catch (err) { console.log(err); }
+  };
+
+  // ── Bookmark toggle ──
+  const handleBookmarkToggle = async () => {
+    if (!currentUserId) return;
+    try {
+      setBookmarkLoading(true);
+      if (isBookmarked) {
+        await axios.delete(`/bookmark-api/remove/${id}`, { withCredentials: true });
+        setIsBookmarked(false);
+      } else {
+        await axios.post(
+          "/bookmark-api/add",
+          { resourceId: id },
+          { withCredentials: true }
+        );
+        setIsBookmarked(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setBookmarkLoading(false);
+    }
   };
 
   // ── Doubt actions ──
@@ -213,7 +241,7 @@ function ResourceDetails() {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:5000/doubt-api/create",
+        "/doubt-api/create",
         {
           resourceId: id,
           title: questionTitle,
@@ -231,11 +259,7 @@ function ResourceDetails() {
 
   const handleMarkSolved = async (doubtId) => {
     try {
-      await axios.put(
-        `http://localhost:5000/doubt-api/solve/${doubtId}`,
-        {},
-        { withCredentials: true }
-      );
+      await axios.put(`/doubt-api/solve/${doubtId}`, {}, { withCredentials: true });
       getDoubts();
     } catch (err) { console.log(err); }
   };
@@ -243,15 +267,11 @@ function ResourceDetails() {
   const handleDeleteDoubt = async (doubtId) => {
     if (!window.confirm("Delete this question?")) return;
     try {
-      await axios.delete(
-        `http://localhost:5000/doubt-api/${doubtId}`,
-        { withCredentials: true }
-      );
+      await axios.delete(`/doubt-api/${doubtId}`, { withCredentials: true });
       getDoubts();
     } catch (err) { console.log(err); }
   };
 
-  // ── Guards ──
   if (loading) {
     return (
       <div className={pageWrapper}>
@@ -284,7 +304,32 @@ function ResourceDetails() {
 
           {/* ── Resource card ── */}
           <div className={`${card} max-w-5xl mx-auto`}>
-            <h1 className={displayLg}>{resource.title}</h1>
+            <div className="flex items-start justify-between gap-4">
+              <h1 className={displayLg}>{resource.title}</h1>
+
+              {/* Bookmark button */}
+              {currentUserId && (
+                <button
+                  onClick={handleBookmarkToggle}
+                  disabled={bookmarkLoading}
+                  title={isBookmarked ? "Remove bookmark" : "Save resource"}
+                  className="shrink-0 mt-2 text-[#6b6b6b] hover:text-[#1c69d4] transition-colors duration-150 disabled:opacity-40"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24"
+                    viewBox="0 0 24 24"
+                    fill={isBookmarked ? "#1c69d4" : "none"}
+                    stroke={isBookmarked ? "#1c69d4" : "currentColor"}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                  </svg>
+                </button>
+              )}
+            </div>
 
             <div className="mt-6">
               <p className={bodyText}>{resource.description}</p>
@@ -332,12 +377,10 @@ function ResourceDetails() {
               <button onClick={handleOpenResource} className={primaryBtn}>
                 Open Resource
               </button>
-
               <button onClick={handleDownload} className={secondaryBtn}>
                 Download
               </button>
 
-              {/* Delete resource — owner only */}
               {isResourceOwner && (
                 <button
                   onClick={handleDeleteResource}
@@ -345,8 +388,7 @@ function ResourceDetails() {
                   className="flex items-center justify-center w-10 h-10 text-[#9a9a9a] hover:text-[#dc2626] transition-colors duration-150"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 6h18" />
-                    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                    <path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
                     <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                     <path d="M10 11v6" /><path d="M14 11v6" />
                   </svg>
@@ -373,21 +415,17 @@ function ResourceDetails() {
 
                   return (
                     <div key={doubt._id} className="py-6 first:pt-0">
-
-                      {/* Doubt header */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 flex-wrap">
                             <h3 className={titleMd}>{doubt.title}</h3>
-                            {doubt.solved && (
+                            {doubt.solved ? (
                               <span className="text-[11px] font-bold tracking-[1px] uppercase text-[#22c55e] border border-[#22c55e] px-2 py-0.5">
                                 Solved
                               </span>
-                            )}
+                            ) : null}
                           </div>
-
                           <p className={`${bodyText} mt-1`}>{doubt.question}</p>
-
                           <p className="text-[12px] text-[#9a9a9a] mt-2">
                             Asked by{" "}
                             <span className="font-medium text-[#6b6b6b]">
@@ -396,7 +434,6 @@ function ResourceDetails() {
                           </p>
                         </div>
 
-                        {/* Owner actions — mark solved + delete */}
                         {isDoubtOwner && (
                           <div className="flex items-center gap-3 shrink-0">
                             {!doubt.solved && (
@@ -409,12 +446,10 @@ function ResourceDetails() {
                             )}
                             <button
                               onClick={() => handleDeleteDoubt(doubt._id)}
-                              title="Delete question"
                               className="text-[#9a9a9a] hover:text-[#dc2626] transition-colors duration-150"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M3 6h18" />
-                                <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                                <path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
                                 <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                                 <path d="M10 11v6" /><path d="M14 11v6" />
                               </svg>
@@ -423,7 +458,6 @@ function ResourceDetails() {
                         )}
                       </div>
 
-                      {/* Replies */}
                       <ReplySection
                         doubtId={doubt._id}
                         answers={doubt.answers}
@@ -435,10 +469,9 @@ function ResourceDetails() {
               )}
             </div>
 
-            {/* Ask a question form */}
+            {/* Ask a question */}
             <div className="border-t border-[#e6e6e6] mt-6 pt-8">
               <h3 className={displayMd}>Ask a Question</h3>
-
               <form onSubmit={handleAskQuestion} className="mt-6 space-y-4">
                 <div>
                   <label className={`block mb-2 ${labelUppercase}`}>Title</label>
@@ -451,7 +484,6 @@ function ResourceDetails() {
                     required
                   />
                 </div>
-
                 <div>
                   <label className={`block mb-2 ${labelUppercase}`}>Question</label>
                   <textarea
@@ -463,7 +495,6 @@ function ResourceDetails() {
                     required
                   />
                 </div>
-
                 <button type="submit" className={primaryBtn}>
                   Post Question
                 </button>

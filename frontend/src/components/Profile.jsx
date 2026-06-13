@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { toast } from "react-hot-toast";
+import axios from "axios";
+import { useAuthStore } from "../store/authStore";
 
 import {
   pageWrapper,
   container,
   sectionPadding,
   displayLg,
-  titleLg,
+  displayMd,
   card,
   textInput,
   primaryBtn,
+  secondaryBtn,
   bodyText,
   mutedText,
+  labelUppercase,
 } from "../styles/common";
 
 function Profile() {
+  const { currentUser, updateProfile, getProfile } = useAuthStore((s) => s);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -28,83 +33,53 @@ function Profile() {
     semester: "",
   });
 
-  const [dashboard, setDashboard] = useState({
-    points: 0,
-    uploads: 0,
-    downloads: 0,
-    savedResources: 0,
-    badges: [],
-  });
-
   const [passwordData, setPasswordData] = useState({
     password: "",
     newpassword: "",
   });
 
-  const getData = async () => {
-    try {
-      const [profileRes, dashboardRes] = await Promise.all([
-        axios.get(
-          "http://localhost:5000/user-api/profile",
-          { withCredentials: true }
-        ),
-        axios.get(
-          "http://localhost:5000/user-api/dashboard",
-          { withCredentials: true }
-        ),
-      ]);
-
-      setProfile(profileRes.data.payload);
-      setDashboard(dashboardRes.data.payload);
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to load profile");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    getData();
+    const load = async () => {
+      await getProfile();
+      setLoading(false);
+    };
+    load();
   }, []);
 
-  const handleChange = (e) => {
-    setProfile({
-      ...profile,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // Sync form when currentUser loads
+  useEffect(() => {
+    if (currentUser) {
+      setProfile({
+        name:     currentUser.name     || "",
+        email:    currentUser.email    || "",
+        photo:    currentUser.photo    || "",
+        college:  currentUser.college  || "",
+        branch:   currentUser.branch   || "",
+        semester: currentUser.semester || "",
+      });
+    }
+  }, [currentUser]);
 
-  const handlePasswordChange = (e) => {
-    setPasswordData({
-      ...passwordData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleChange = (e) =>
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+
+  const handlePasswordChange = (e) =>
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-
     try {
       setSaving(true);
-
-      await axios.put(
-        "http://localhost:5000/user-api/update-profile",
-        {
-          name: profile.name,
-          photo: profile.photo,
-          college: profile.college,
-          branch: profile.branch,
-          semester: profile.semester,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      toast.success("Profile updated");
-    } catch (err) {
-      console.log(err);
+      const success = await updateProfile({
+        name:     profile.name,
+        photo:    profile.photo,
+        college:  profile.college,
+        branch:   profile.branch,
+        semester: profile.semester,
+      });
+      if (success) toast.success("Profile updated");
+      else toast.error("Update failed");
+    } catch {
       toast.error("Update failed");
     } finally {
       setSaving(false);
@@ -113,57 +88,35 @@ function Profile() {
 
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
-
     try {
-      await axios.put(
-        "http://localhost:5000/user-api/password",
-        {
-          email: profile.email,
-          password: passwordData.password,
-          newpassword: passwordData.newpassword,
-        }
-      );
-
-      toast.success("Password updated");
-
-      setPasswordData({
-        password: "",
-        newpassword: "",
+      await axios.put("/user-api/password", {
+        email:       profile.email,
+        password:    passwordData.password,
+        newpassword: passwordData.newpassword,
       });
+      toast.success("Password updated");
+      setPasswordData({ password: "", newpassword: "" });
     } catch (err) {
-      console.log(err);
-
-      toast.error(
-        err.response?.data?.message ||
-          "Password update failed"
-      );
+      toast.error(err.response?.data?.message || "Password update failed");
     }
   };
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
-
     if (!file) return;
-
-    const imageUrl = URL.createObjectURL(file);
-
-    setProfile({
-      ...profile,
-      photo: imageUrl,
-    });
-
-    toast.success(
-      "Image selected. Click Update Profile to save."
-    );
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfile((prev) => ({ ...prev, photo: reader.result }));
+    };
+    reader.readAsDataURL(file);
+    toast.success("Image selected — click Update Profile to save.");
   };
 
   if (loading) {
     return (
       <div className={pageWrapper}>
         <div className={container}>
-          <p className="py-20">
-            Loading profile...
-          </p>
+          <p className="py-20">Loading profile...</p>
         </div>
       </div>
     );
@@ -173,35 +126,39 @@ function Profile() {
     <div className={pageWrapper}>
       <section className={sectionPadding}>
         <div className={container}>
-          <h1 className={displayLg}>
-            Profile
-          </h1>
-
-          <p className={`${bodyText} mt-4`}>
-            Manage your account and activity.
+          <h1 className={displayLg}>Profile</h1>
+          <p className={`${bodyText} mt-3`}>
+            Manage your account details and password.
           </p>
 
-          {/* PROFILE */}
-
+          {/* ── Profile form ── */}
           <form
             onSubmit={handleUpdateProfile}
-            className={`${card} mt-10 max-w-4xl`}
+            className={`${card} mt-10 max-w-3xl`}
           >
-            <div className="flex flex-col items-center mb-8">
-              <label
-                htmlFor="profile-image"
-                className="cursor-pointer"
-              >
-                <img
-                  src={
-                    profile.photo ||
-                    `https://ui-avatars.com/api/?name=${profile.name}`
-                  }
-                  alt="profile"
-                  className="w-32 h-32 rounded-full object-cover border-2 border-gray-300"
-                />
-              </label>
+            <h2 className={displayMd}>Account Details</h2>
 
+            {/* Avatar */}
+            <div className="flex flex-col items-center mt-6 mb-8">
+              <label htmlFor="profile-image" className="cursor-pointer group">
+                <div className="relative">
+                  <img
+                    src={
+                      profile.photo ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        profile.name || "U"
+                      )}&size=128&background=1c69d4&color=fff`
+                    }
+                    alt="profile"
+                    className="w-28 h-28 rounded-full object-cover border-2 border-[#e6e6e6] group-hover:border-[#1c69d4] transition-colors duration-150"
+                  />
+                  <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/10 transition-colors duration-150 flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-bold tracking-wider uppercase transition-opacity duration-150">
+                      Change
+                    </span>
+                  </div>
+                </div>
+              </label>
               <input
                 id="profile-image"
                 type="file"
@@ -209,88 +166,67 @@ function Profile() {
                 className="hidden"
                 onChange={handleImageSelect}
               />
-
-              <p className={`${mutedText} mt-3`}>
-                Click image to change photo
+              <p className={`${mutedText} mt-3 text-sm`}>
+                Click photo to change
               </p>
             </div>
 
+            {/* Fields */}
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 font-semibold">
-                  Name
-                </label>
-
+                <label className={`block mb-2 ${labelUppercase}`}>Name</label>
                 <input
                   type="text"
                   name="name"
-                  value={profile.name || ""}
+                  value={profile.name}
                   onChange={handleChange}
                   className={textInput}
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-semibold">
-                  Email
-                </label>
-
+                <label className={`block mb-2 ${labelUppercase}`}>Email</label>
                 <input
                   type="email"
-                  value={profile.email || ""}
+                  value={profile.email}
                   disabled
-                  className={`${textInput} bg-gray-100`}
+                  className={`${textInput} opacity-50 cursor-not-allowed`}
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-semibold">
-                  College
-                </label>
-
+                <label className={`block mb-2 ${labelUppercase}`}>College</label>
                 <input
                   type="text"
                   name="college"
-                  value={profile.college || ""}
+                  value={profile.college}
                   onChange={handleChange}
                   className={textInput}
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-semibold">
-                  Branch
-                </label>
-
+                <label className={`block mb-2 ${labelUppercase}`}>Branch</label>
                 <input
                   type="text"
                   name="branch"
-                  value={profile.branch || ""}
+                  value={profile.branch}
                   onChange={handleChange}
                   className={textInput}
                 />
               </div>
 
               <div>
-                <label className="block mb-2 font-semibold">
-                  Semester
-                </label>
-
+                <label className={`block mb-2 ${labelUppercase}`}>Semester</label>
                 <select
                   name="semester"
-                  value={profile.semester || ""}
+                  value={profile.semester}
                   onChange={handleChange}
                   className={textInput}
                 >
-                  <option value="">
-                    Select Semester
-                  </option>
-
-                  {[1,2,3,4,5,6,7,8].map((sem) => (
-                    <option
-                      key={sem}
-                      value={sem}
-                    >
+                  <option value="">Select Semester</option>
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                    <option key={sem} value={sem}>
                       Semester {sem}
                     </option>
                   ))}
@@ -303,131 +239,66 @@ function Profile() {
               disabled={saving}
               className={`${primaryBtn} mt-8`}
             >
-              {saving
-                ? "Saving..."
-                : "Update Profile"}
+              {saving ? "Saving…" : "Update Profile"}
             </button>
           </form>
 
-          {/* STATS */}
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-            <div className={card}>
-              <h3 className={titleLg}>
-                {dashboard.points}
-              </h3>
-              <p className={mutedText}>
-                Points
-              </p>
-            </div>
-
-            <div className={card}>
-              <h3 className={titleLg}>
-                {dashboard.uploads}
-              </h3>
-              <p className={mutedText}>
-                Uploads
-              </p>
-            </div>
-
-            <div className={card}>
-              <h3 className={titleLg}>
-                {dashboard.savedResources}
-              </h3>
-              <p className={mutedText}>
-                Saved Resources
-              </p>
-            </div>
-
-            <div className={card}>
-              <h3 className={titleLg}>
-                {dashboard.downloads}
-              </h3>
-              <p className={mutedText}>
-                Downloads
-              </p>
-            </div>
-          </div>
-
-          {/* BADGES */}
-
-          <div className={`${card} mt-10`}>
-            <h2 className={titleLg}>
-              Badges
-            </h2>
-
-            {dashboard.badges?.length > 0 ? (
-              <div className="flex flex-wrap gap-3 mt-5">
-                {dashboard.badges.map(
-                  (badge, index) => (
-                    <span
-                      key={index}
-                      className="px-4 py-2 rounded-full bg-gray-100"
-                    >
-                      {badge}
-                    </span>
-                  )
-                )}
-              </div>
-            ) : (
-              <p className={`${mutedText} mt-4`}>
-                No badges earned yet.
-              </p>
-            )}
-          </div>
-
-          {/* ACTIVITY */}
-
-          <div className={`${card} mt-10`}>
-            <h2 className={titleLg}>
-              Activity Summary
-            </h2>
-
-            <div className="space-y-3 mt-5">
-              <p>📤 Uploaded Resources: {dashboard.uploads}</p>
-              <p>📥 Downloads: {dashboard.downloads}</p>
-              <p>⭐ Saved Resources: {dashboard.savedResources}</p>
-              <p>🏆 Total Points: {dashboard.points}</p>
-            </div>
-          </div>
-
-          {/* CHANGE PASSWORD */}
-
+          {/* ── Change password ── */}
           <form
             onSubmit={handlePasswordUpdate}
-            className={`${card} mt-10`}
+            className={`${card} mt-8 max-w-3xl`}
           >
-            <h2 className={titleLg}>
-              Change Password
-            </h2>
+            <h2 className={displayMd}>Change Password</h2>
+            <p className={`${mutedText} mt-2`}>
+              Leave blank if you signed in with Google.
+            </p>
 
             <div className="space-y-4 mt-6">
-              <input
-                type="password"
-                name="password"
-                value={passwordData.password}
-                onChange={handlePasswordChange}
-                placeholder="Current Password"
-                className={textInput}
-              />
+              <div>
+                <label className={`block mb-2 ${labelUppercase}`}>
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={passwordData.password}
+                  onChange={handlePasswordChange}
+                  placeholder="••••••••"
+                  className={textInput}
+                />
+              </div>
 
-              <input
-                type="password"
-                name="newpassword"
-                value={passwordData.newpassword}
-                onChange={handlePasswordChange}
-                placeholder="New Password"
-                className={textInput}
-              />
+              <div>
+                <label className={`block mb-2 ${labelUppercase}`}>
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  name="newpassword"
+                  value={passwordData.newpassword}
+                  onChange={handlePasswordChange}
+                  placeholder="••••••••"
+                  className={textInput}
+                />
+              </div>
 
-              <button
-                type="submit"
-                className={primaryBtn}
-              >
-                Update Password
-              </button>
+              <div className="flex gap-3 pt-2">
+                <button type="submit" className={primaryBtn}>
+                  Update Password
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setPasswordData({ password: "", newpassword: "" })
+                  }
+                  className={secondaryBtn}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </form>
+
         </div>
       </section>
     </div>

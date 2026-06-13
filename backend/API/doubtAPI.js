@@ -1,6 +1,7 @@
 import exp from "express"
 import {DoubtModel} from "../models/doubtModel.js"
 import {verifyToken} from "../middleware/verifyToken.js"
+import { NotificationModel } from "../models/notificationModel.js";
 export const doubtApp=exp.Router()
 //CREATE DOUBT
 doubtApp.post("/create",verifyToken,async(req,res)=>{
@@ -68,6 +69,7 @@ doubtApp.post("/reply/:id",verifyToken,async(req,res)=>{
         }
         doubt.answers.push({user:req.user.id,message})
         await doubt.save()
+        await NotificationModel.create({userId: doubt.askedBy,message: `Someone replied to your question "${doubt.title}"`,});
         res.status(200).json({message:"Reply added"})
     }
     catch(err){
