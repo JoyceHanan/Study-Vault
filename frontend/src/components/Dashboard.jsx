@@ -147,10 +147,9 @@ function Dashboard() {
           </p>
 
           {/* ── Stats ── */}
-          <div className="grid sm:grid-cols-3 gap-6 mt-10">
+          <div className="grid sm:grid-cols-2 gap-6 mt-10">
             <StatCard value={stats?.uploads}   label="Resources Uploaded" icon="📤" />
             <StatCard value={stats?.bookmarks} label="Bookmarks"          icon="🔖" />
-            <StatCard value={stats?.downloads} label="Downloads"          icon="📥" />
           </div>
 
           {/* ── Notifications ── */}
@@ -249,9 +248,7 @@ function Dashboard() {
                       <span className="text-[13px] text-[#6b6b6b]">
                         👍 {r.upvotes?.length || 0}
                       </span>
-                      <span className="text-[13px] text-[#6b6b6b]">
-                        📥 {r.downloads || 0}
-                      </span>
+                    
                       <Link
                         to={`/resources/${r._id}`}
                         className="text-[13px] font-bold tracking-[1px] uppercase text-[#1c69d4] hover:text-[#0653b6] transition-colors duration-150"

@@ -70,15 +70,17 @@ function Profile() {
     e.preventDefault();
     try {
       setSaving(true);
+      // Only send text fields — photo is handled separately via Cloudinary
+      // to avoid sending large base64 strings in JSON body
       const success = await updateProfile({
         name:     profile.name,
-        photo:    profile.photo,
+        photo:    profile.photo.startsWith("data:") ? undefined : profile.photo,
         college:  profile.college,
         branch:   profile.branch,
         semester: profile.semester,
       });
-      if (success) toast.success("Profile updated");
-      else toast.error("Update failed");
+      if (success) toast.success("Profile updated successfully!");
+      else toast.error(useAuthStore.getState().error || "Update failed");
     } catch {
       toast.error("Update failed");
     } finally {
@@ -101,15 +103,28 @@ function Profile() {
     }
   };
 
-  const handleImageSelect = (e) => {
+  const handleImageSelect = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfile((prev) => ({ ...prev, photo: reader.result }));
-    };
-    reader.readAsDataURL(file);
-    toast.success("Image selected — click Update Profile to save.");
+    try {
+      toast.loading("Uploading photo…", { id: "photo" });
+      // Upload photo to cloudinary first, save URL to profile
+      const formData = new FormData();
+      formData.append("file", file);
+      const cloudRes = await axios.post(
+        "/resource-api/upload-photo",
+        formData,
+        { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } }
+      );
+      const photoUrl = cloudRes.data.url;
+      setProfile((prev) => ({ ...prev, photo: photoUrl }));
+      // Auto-save the photo immediately
+      await updateProfile({ photo: photoUrl });
+      toast.success("Profile photo updated!", { id: "photo" });
+    } catch (err) {
+      console.log(err);
+      toast.error("Photo upload failed. Try again.", { id: "photo" });
+    }
   };
 
   if (loading) {
@@ -249,9 +264,6 @@ function Profile() {
             className={`${card} mt-8 max-w-3xl mx-auto`}
           >
             <h2 className={displayMd}>Change Password</h2>
-            <p className={`${mutedText} mt-2`}>
-              Leave blank if you signed in with Google.
-            </p>
 
             <div className="space-y-4 mt-6">
               <div>

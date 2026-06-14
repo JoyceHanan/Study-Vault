@@ -3,7 +3,7 @@ import {ResourceModel} from "../models/resourceModel.js"
 import {UserModel} from "../models/userModel.js"
 import {verifyToken} from "../middleware/verifyToken.js"
 export const resourceApp=exp.Router()
-import { upload } from "../config/multer.js";
+import { upload ,uploadImage } from "../config/multer.js";
 import { uploadToCloudinary } from "../config/cloudinaryUpload.js";
 import cloudinary from "../config/cloudinary.js";
 import { NotificationModel } from "../models/notificationModel.js";
@@ -180,5 +180,17 @@ resourceApp.get("/download/:id", verifyToken, async (req, res) => {
     res.status(500).json({
       message: "Download failed",
     });
+  }
+});
+
+
+// Separate upload for images only (profile photos)
+resourceApp.post("/upload-photo", verifyToken, uploadImage.single("file"), async (req, res) => {
+  try {
+    const cloudResponse = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+    res.status(200).json({ url: cloudResponse.secure_url });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Photo upload failed" });
   }
 });

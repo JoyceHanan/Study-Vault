@@ -94,7 +94,7 @@ function Home() {
 
             <div className="flex flex-wrap gap-4 mt-10">
               <button onClick={handleGetStarted} className={primaryBtn}>
-                Get Started Free
+                Get Started 
               </button>
               <button
                 onClick={() => navigate("/resources")}

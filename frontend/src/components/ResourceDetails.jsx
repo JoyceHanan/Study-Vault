@@ -154,7 +154,11 @@ const getViewerUrl = (fileUrl, fileType) => {
     fileType?.includes("ms-powerpoint") ||
     fileType?.includes("msword") ||
     fileUrl.toLowerCase().match(/\.(pptx?|docx?|xlsx?)($|\?)/);
-  if (isPdf) return fileUrl;
+  if (isPdf) {
+  return `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
+    fileUrl
+  )}`;
+}
   if (isOffice)
     return `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
   return fileUrl;
@@ -318,15 +322,36 @@ function ResourceDetails() {
     window.open(getViewerUrl(resource.fileUrl, resource.fileType), "_blank");
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!resource?.fileUrl) return;
-    const a = document.createElement("a");
-    a.href = resource.fileUrl;
-    a.download = resource.title || "resource";
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      // Call backend to increment download count
+      const res = await axios.get(
+        `/resource-api/download/${id}`,
+        { withCredentials: true }
+      );
+      // Open the file URL returned by backend
+      const fileUrl = res.data.fileUrl || resource.fileUrl;
+      const a = document.createElement("a");
+      a.href = fileUrl;
+      a.download = resource.title || "resource";
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      // Refresh resource to show updated download count
+      getResource();
+    } catch (err) {
+      console.log(err);
+      // Fallback — still let them download even if count update fails
+      const a = document.createElement("a");
+      a.href = resource.fileUrl;
+      a.download = resource.title || "resource";
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   };
 
   const handleDeleteResource = async () => {

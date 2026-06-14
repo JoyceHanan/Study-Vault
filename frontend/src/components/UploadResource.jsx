@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {useNavigate} from "react-router"
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
@@ -16,7 +17,7 @@ import {
 
 function UploadResource() {
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const [resourceData, setResourceData] = useState({
     title: "",
     description: "",
@@ -87,7 +88,9 @@ function UploadResource() {
       toast.success(
         res.data.message || "Resource uploaded"
       );
-
+    setTimeout(() => {
+      navigate("/resources");
+    }, 1000);
       setResourceData({
         title: "",
         description: "",
