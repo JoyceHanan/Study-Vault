@@ -15,20 +15,21 @@ import {
 function Home() {
   const navigate = useNavigate();
 
-  const user = useAuthStore((state) => state.user);
+  const currentUser = useAuthStore(
+    (state) => state.currentUser
+  );
 
   const handleGetStarted = () => {
-    if (user) {
+    if (currentUser) {
       navigate("/dashboard");
     } else {
-      navigate("/register");
+      navigate("/login");
     }
   };
 
   return (
     <div className={pageWrapper}>
       {/* HERO SECTION */}
-
       <section className={sectionPadding}>
         <div className={container}>
           <div className="max-w-4xl">
@@ -41,7 +42,8 @@ function Home() {
             <p className={`${bodyText} mt-6 max-w-3xl`}>
               Study Vault is a collaborative platform where students
               can upload notes, share resources, access study
-              materials, save useful content, and learn together.
+              materials, and learn together through discussions and
+              shared knowledge.
             </p>
 
             <div className="flex flex-wrap gap-4 mt-10">
@@ -54,7 +56,7 @@ function Home() {
 
               <button
                 onClick={() => navigate("/resources")}
-                className="px-8 h-14 border border-[#d9d9d9] font-semibold"
+                className="px-8 h-14 border border-[#d9d9d9] font-semibold hover:border-[#262626] transition-colors duration-150"
               >
                 Browse Resources
               </button>
@@ -64,7 +66,6 @@ function Home() {
       </section>
 
       {/* FEATURES SECTION */}
-
       <section className={sectionPadding}>
         <div className={container}>
           <h2 className={displayLg}>
@@ -78,8 +79,9 @@ function Home() {
               </h3>
 
               <p className={`${bodyText} mt-4`}>
-                Share notes, assignments, question papers and
-                presentations with other students.
+                Share notes, assignments, question papers,
+                presentations and study material with fellow
+                students.
               </p>
             </div>
 
@@ -89,30 +91,30 @@ function Home() {
               </h3>
 
               <p className={`${bodyText} mt-4`}>
-                Search and access useful study material uploaded by
-                the community.
+                Discover useful study materials uploaded by the
+                community and access them instantly.
               </p>
             </div>
 
             <div className={card}>
               <h3 className={titleLg}>
-                💾 Save Resources
+                💬 Discussions
               </h3>
 
               <p className={`${bodyText} mt-4`}>
-                Bookmark important resources and revisit them
-                whenever needed.
+                Ask questions directly under resources and learn
+                collaboratively with other students.
               </p>
             </div>
 
             <div className={card}>
               <h3 className={titleLg}>
-                🤝 Learn Together
+                🤝 Collaborative Learning
               </h3>
 
               <p className={`${bodyText} mt-4`}>
-                Collaborate with classmates through discussions,
-                doubts and shared learning.
+                Share knowledge, help classmates, and build a
+                stronger learning community together.
               </p>
             </div>
           </div>

@@ -134,7 +134,7 @@ function Profile() {
           {/* ── Profile form ── */}
           <form
             onSubmit={handleUpdateProfile}
-            className={`${card} mt-10 max-w-3xl`}
+            className={`${card} mt-10 max-w-3xl mx-auto`}
           >
             <h2 className={displayMd}>Account Details</h2>
 
@@ -246,7 +246,7 @@ function Profile() {
           {/* ── Change password ── */}
           <form
             onSubmit={handlePasswordUpdate}
-            className={`${card} mt-8 max-w-3xl`}
+            className={`${card} mt-8 max-w-3xl mx-auto`}
           >
             <h2 className={displayMd}>Change Password</h2>
             <p className={`${mutedText} mt-2`}>

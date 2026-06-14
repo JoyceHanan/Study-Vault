@@ -27,5 +27,14 @@ export const socketConnection=(io)=>{
         socket.on("disconnect",()=>{
             console.log("User disconnected:",socket.id);
         });
+        // Delete message
+        socket.on("delete-message", (data) => {
+            io.to(data.roomId).emit("message-deleted", data.messageId);
+        });
+        // Edit message
+
+        socket.on("edit-message", (data) => {
+            io.to(data.roomId).emit("message-edited", data);
+        });
     });
 };

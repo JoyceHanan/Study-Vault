@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 
@@ -33,13 +33,14 @@ function StatCard({ value, label, icon }) {
 function Dashboard() {
   const { currentUser, getDashboard } = useAuthStore((s) => s);
   const currentUserId = (currentUser?._id || currentUser?.id || "").toString();
+  const navigate = useNavigate(); // ← fix
 
-  const [stats, setStats]             = useState(null);
-  const [bookmarks, setBookmarks]     = useState([]);
-  const [myDoubts, setMyDoubts]       = useState([]);
-  const [myResources, setMyResources] = useState([]);
+  const [stats, setStats]                 = useState(null);
+  const [bookmarks, setBookmarks]         = useState([]);
+  const [myDoubts, setMyDoubts]           = useState([]);
+  const [myResources, setMyResources]     = useState([]);
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]             = useState(true);
 
   const fetchAll = async () => {
     try {
@@ -59,7 +60,6 @@ function Dashboard() {
       const allDoubts    = doubtsRes.data.payload    || [];
       const allResources = resourcesRes.data.payload || [];
 
-      // toString() on both sides — fixes ObjectId vs string mismatch
       setMyDoubts(
         allDoubts.filter(
           (d) => d.askedBy?._id?.toString() === currentUserId
@@ -107,10 +107,13 @@ function Dashboard() {
         withCredentials: true,
       });
       setBookmarks((prev) =>
-        prev.filter((b) => b.resourceId?._id?.toString() !== resourceId.toString())
+        prev.filter(
+          (b) => b.resourceId?._id?.toString() !== resourceId.toString()
+        )
       );
-      // Refresh stat count
-      const dashRes = await axios.get("/user-api/dashboard", { withCredentials: true });
+      const dashRes = await axios.get("/user-api/dashboard", {
+        withCredentials: true,
+      });
       setStats(dashRes.data.payload);
     } catch (err) {
       console.log(err);
@@ -145,29 +148,9 @@ function Dashboard() {
 
           {/* ── Stats ── */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-            <StatCard value={stats?.points}    label="Points Earned"      icon="🏆" />
             <StatCard value={stats?.uploads}   label="Resources Uploaded" icon="📤" />
             <StatCard value={stats?.bookmarks} label="Bookmarks"          icon="🔖" />
             <StatCard value={stats?.downloads} label="Downloads"          icon="📥" />
-          </div>
-
-          {/* ── Badges ── */}
-          <div className={`${card} mt-8`}>
-            <h2 className={displayMd}>Badges</h2>
-            {stats?.badges?.length > 0 ? (
-              <div className="flex flex-wrap gap-3 mt-5">
-                {stats.badges.map((badge, i) => (
-                  <span
-                    key={i}
-                    className="px-4 py-1.5 border border-[#e6e6e6] text-[13px] font-bold tracking-[0.5px] text-[#262626]"
-                  >
-                    {badge}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className={`${mutedText} mt-4`}>No badges earned yet.</p>
-            )}
           </div>
 
           {/* ── Notifications ── */}
@@ -252,14 +235,23 @@ function Dashboard() {
             ) : (
               <div className="mt-5 divide-y divide-[#e6e6e6]">
                 {myResources.map((r) => (
-                  <div key={r._id} className="py-4 flex items-center justify-between gap-4">
+                  <div
+                    key={r._id}
+                    className="py-4 flex items-center justify-between gap-4"
+                  >
                     <div>
                       <p className={titleSm}>{r.title}</p>
                       <p className={`${mutedText} mt-0.5`}>
                         {r.subject} · Semester {r.semester}
                       </p>
                     </div>
-                    <div className="flex items-center gap-4 shrink-0">                   
+                    <div className="flex items-center gap-4 shrink-0">
+                      <span className="text-[13px] text-[#6b6b6b]">
+                        👍 {r.upvotes?.length || 0}
+                      </span>
+                      <span className="text-[13px] text-[#6b6b6b]">
+                        📥 {r.downloads || 0}
+                      </span>
                       <Link
                         to={`/resources/${r._id}`}
                         className="text-[13px] font-bold tracking-[1px] uppercase text-[#1c69d4] hover:text-[#0653b6] transition-colors duration-150"
@@ -290,7 +282,10 @@ function Dashboard() {
                   const r = b.resourceId;
                   if (!r) return null;
                   return (
-                    <div key={b._id} className="py-4 flex items-center justify-between gap-4">
+                    <div
+                      key={b._id}
+                      className="py-4 flex items-center justify-between gap-4"
+                    >
                       <div>
                         <p className={titleSm}>{r.title}</p>
                         <p className={`${mutedText} mt-0.5`}>
@@ -332,7 +327,10 @@ function Dashboard() {
             ) : (
               <div className="mt-5 divide-y divide-[#e6e6e6]">
                 {myDoubts.map((d) => (
-                  <div key={d._id} className="py-4 flex items-center justify-between gap-4">
+                  <div
+                    key={d._id}
+                    className="py-4 flex items-center justify-between gap-4"
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 flex-wrap">
                         <p className={titleSm}>{d.title}</p>
@@ -347,7 +345,8 @@ function Dashboard() {
                         )}
                       </div>
                       <p className={`${mutedText} mt-0.5`}>
-                        {d.answers?.length || 0} repl{d.answers?.length === 1 ? "y" : "ies"}
+                        {d.answers?.length || 0} repl
+                        {d.answers?.length === 1 ? "y" : "ies"}
                       </p>
                     </div>
                     <Link
@@ -364,6 +363,9 @@ function Dashboard() {
 
         </div>
       </section>
+
+
+
     </div>
   );
 }
