@@ -145,9 +145,7 @@ userApp.get("/profile",verifyToken,async(req,res)=>{
 userApp.put("/password",async(req,res)=>{
     const{email,password,newpassword}=req.body
     const user=await UserModel.findOne({email})
-    console.log("password:", password);
-    console.log("newpassword:", newpassword);
-    console.log("user.password:", user?.password);
+
     if(!user)
         return res.status(404).json({message:"Email not found"})
     const isPassValid=await compare(password,user.password)
