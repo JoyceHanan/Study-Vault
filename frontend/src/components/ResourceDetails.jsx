@@ -20,6 +20,130 @@ import {
 } from "../styles/common";
 import { useAuthStore } from "../store/authStore";
 
+// ── Share to Room component ─────────────────────────────────────────────────
+function ShareToRoom({ resourceId, resourceTitle }) {
+  const [open, setOpen]     = useState(false);
+  const [rooms, setRooms]   = useState([]);
+  const [sending, setSending] = useState(null); // roomId being sent to
+  const [sent, setSent]     = useState({});     // { roomId: true }
+
+  const loadRooms = async () => {
+    try {
+      const res = await axios.get("/whiteboard-api/rooms", {
+        withCredentials: true,
+      });
+      // Only rooms the user has joined
+      setRooms(res.data.payload || []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleOpen = () => {
+    setOpen((v) => !v);
+    if (!open) loadRooms();
+  };
+
+  const handleShare = async (room) => {
+    try {
+      setSending(room._id);
+      const shareUrl = `${window.location.origin}/resources/${resourceId}`;
+      await axios.post(
+        "/chat-api/send",
+        {
+          roomId:  room._id,
+          message: `📎 ${resourceTitle} — ${shareUrl}`,
+        },
+        { withCredentials: true }
+      );
+
+      // Notify all participants in the room
+      await axios.post(
+        "/notification-api/room-share",
+        {
+          roomId:     room._id,
+          resourceId: resourceId,
+          title:      resourceTitle,
+        },
+        { withCredentials: true }
+      ).catch(() => {}); // silent fail if route doesn't exist yet
+
+      setSent((prev) => ({ ...prev, [room._id]: true }));
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setSending(null);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={handleOpen}
+        title="Share to a study room"
+        className="flex items-center gap-1.5 px-3 h-10 border border-[#e6e6e6] text-[12px] font-bold tracking-[1px] uppercase text-[#6b6b6b] hover:border-[#1c69d4] hover:text-[#1c69d4] transition-colors duration-150"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+        Share
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-12 z-50 bg-white border border-[#e6e6e6] shadow-lg w-64">
+          <p className="px-4 pt-3 pb-2 text-[12px] font-bold tracking-[1px] uppercase text-[#6b6b6b] border-b border-[#e6e6e6]">
+            Share to Room
+          </p>
+
+          {rooms.length === 0 ? (
+            <p className="px-4 py-4 text-[13px] text-[#9a9a9a]">
+              You haven't joined any rooms yet.
+            </p>
+          ) : (
+            <div className="divide-y divide-[#e6e6e6] max-h-60 overflow-y-auto">
+              {rooms.map((room) => (
+                <div
+                  key={room._id}
+                  className="flex items-center justify-between px-4 py-3 gap-3"
+                >
+                  <p className="text-[13px] font-medium text-[#262626] truncate">
+                    # {room.roomName}
+                  </p>
+
+                  {sent[room._id] ? (
+                    <span className="text-[11px] font-bold text-[#22c55e] shrink-0">
+                      ✓ Sent
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => handleShare(room)}
+                      disabled={sending === room._id}
+                      className="shrink-0 px-3 h-7 text-[11px] font-bold tracking-[0.5px] uppercase bg-[#1c69d4] text-white hover:bg-[#0653b6] disabled:opacity-40 transition-colors duration-150"
+                    >
+                      {sending === room._id ? "…" : "Send"}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="border-t border-[#e6e6e6] px-4 py-2">
+            <button
+              onClick={() => setOpen(false)}
+              className="text-[12px] text-[#9a9a9a] hover:text-[#262626] transition-colors duration-150"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const getViewerUrl = (fileUrl, fileType) => {
   if (!fileUrl) return null;
   const isPdf =
@@ -380,6 +504,14 @@ function ResourceDetails() {
               <button onClick={handleDownload} className={secondaryBtn}>
                 Download
               </button>
+
+              {/* Share to room */}
+              {currentUserId && (
+                <ShareToRoom
+                  resourceId={id}
+                  resourceTitle={resource.title}
+                />
+              )}
 
               {isResourceOwner && (
                 <button

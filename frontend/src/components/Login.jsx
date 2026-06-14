@@ -18,19 +18,31 @@ import { toast } from "react-hot-toast";
 import { useAuthStore } from "../store/authStore";
 
 function Login() {
-  const {register,handleSubmit,formState:{errors},}=useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
   const navigate = useNavigate();
-  const {login,loading,isAuthenticated}=useAuthStore((state)=>state);
+
+  const { login, loading, isAuthenticated, error, clearError } = useAuthStore(
+    (state) => state
+  );
+
   const onUserLogin = async (userCredObj) => {
+    clearError();
     const success = await login(userCredObj);
     if (!success) {
-      toast.error("Login failed");
+      // error is already set in store by login()
+      const errMsg = useAuthStore.getState().error || "Login failed";
+      toast.error(errMsg);
     }
   };
 
   useEffect(() => {
     if (isAuthenticated) {
-      toast.success("Login successful");
+      toast.success("Login successful!");
       navigate("/");
     }
   }, [isAuthenticated, navigate]);
@@ -39,7 +51,6 @@ function Login() {
     <div className={`${pageWrapper} ${centeredFlex} px-4`}>
       <div className="w-full max-w-md">
 
-        {/* Header */}
         <div className="mb-10">
           <h1 className={heroTitle}>Sign in</h1>
           <p className={`${bodyText} mt-4`}>
@@ -47,22 +58,24 @@ function Login() {
           </p>
         </div>
 
-        {/* Card */}
         <div className={card}>
           <form onSubmit={handleSubmit(onUserLogin)} className="space-y-5">
 
+            {/* Server error banner */}
+            {error && (
+              <div className="bg-[#fef2f2] border border-[#dc2626] px-4 py-3">
+                <p className="text-[13px] font-medium text-[#dc2626]">{error}</p>
+              </div>
+            )}
+
             {/* Email */}
             <div>
-              <label className={`block mb-2 ${labelUppercase}`}>
-                Email
-              </label>
+              <label className={`block mb-2 ${labelUppercase}`}>Email</label>
               <input
                 type="email"
                 className={textInput}
                 placeholder="you@example.com"
-                {...register("email", {
-                  required: "Email is required",
-                })}
+                {...register("email", { required: "Email is required" })}
               />
               {errors.email && (
                 <p className={errorText}>{errors.email.message}</p>
@@ -71,23 +84,18 @@ function Login() {
 
             {/* Password */}
             <div>
-              <label className={`block mb-2 ${labelUppercase}`}>
-                Password
-              </label>
+              <label className={`block mb-2 ${labelUppercase}`}>Password</label>
               <input
                 type="password"
                 className={textInput}
                 placeholder="••••••••"
-                {...register("password", {
-                  required: "Password is required",
-                })}
+                {...register("password", { required: "Password is required" })}
               />
               {errors.password && (
                 <p className={errorText}>{errors.password.message}</p>
               )}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
@@ -97,7 +105,6 @@ function Login() {
             </button>
           </form>
 
-          {/* Footer link */}
           <div className="mt-6 text-center">
             <p className={mutedText}>
               Don't have an account?{" "}

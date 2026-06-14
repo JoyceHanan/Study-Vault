@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
+import { Toaster } from "react-hot-toast";
 import RootLayout from "./components/RootLayout";
 import Home from "./components/Home";
 import Login from "./components/Login";
@@ -75,7 +76,16 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <Toaster
+       position="top-right"
+        toastOptions={{
+          duration: 3000,
+        }} />
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
 export default App;

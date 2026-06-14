@@ -334,7 +334,50 @@ function Chatroom() {
                           : "bg-[#f7f7f7] text-[#262626]"
                       }`}
                     >
-                      {msg.message}
+                      {/* Render shared resource links as clickable cards */}
+                      {msg.message.startsWith("📎 ") ? (
+                        (() => {
+                          const parts = msg.message.split(" — ");
+                          const title = parts[0].replace("📎 ", "").trim();
+                          const url   = parts[1]?.trim();
+                          const path  = url?.replace(window.location.origin, "");
+                          return (
+                            <div className={`flex flex-col gap-2 p-3 border ${
+                              isOwn
+                                ? "border-white/30 bg-white/10"
+                                : "border-[#e6e6e6] bg-white"
+                            }`}>
+                              <p className={`text-[10px] font-bold tracking-[1.5px] uppercase ${
+                                isOwn ? "text-white/60" : "text-[#9a9a9a]"
+                              }`}>
+                                Shared Resource
+                              </p>
+                              <p className={`text-[14px] font-bold leading-[1.3] ${
+                                isOwn ? "text-white" : "text-[#262626]"
+                              }`}>
+                                {title}
+                              </p>
+                              {path && (
+                                <a
+                                  href={path}
+                                  className={`inline-flex items-center gap-1 text-[12px] font-bold tracking-[0.5px] uppercase mt-1 w-fit ${
+                                    isOwn
+                                      ? "text-white underline"
+                                      : "text-[#1c69d4] hover:text-[#0653b6]"
+                                  } transition-colors duration-150`}
+                                >
+                                  Open Resource
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                  </svg>
+                                </a>
+                              )}
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        msg.message
+                      )}
                       {msg.edited && (
                         <span className="text-[10px] opacity-60 ml-2">(edited)</span>
                       )}
