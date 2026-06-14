@@ -10,7 +10,6 @@ import {chatApp} from './API/chatAPI.js'
 import {bookmarkApp} from './API/bookmarkAPI.js'
 import {notificationApp} from './API/notificationAPI.js'
 import {whiteboardApp} from './API/whiteboardAPI.js'
-import {reportApp} from './API/reportAPI.js'
 import http from "http";
 import {Server} from "socket.io";
 import {socketConnection}from "./socket/socket.js"
@@ -37,7 +36,6 @@ config()
  app.use("/bookmark-api",bookmarkApp)
  app.use("/notification-api",notificationApp)
  app.use("/whiteboard-api",whiteboardApp)
- app.use("/report-api",reportApp)
  const port=process.env.PORT||5000
  const connectionDb=async()=>{
     try{

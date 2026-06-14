@@ -72,7 +72,7 @@ function Register() {
               <label className={`block mb-2 ${labelUppercase}`}>Full Name</label>
               <input
                 type="text"
-                placeholder="Joyce Hanan Marri"
+                placeholder="Name"
                 className={textInput}
                 {...register("name", { required: "Name is required" })}
               />

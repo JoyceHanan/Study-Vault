@@ -59,7 +59,7 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { step: "01", title: "Create an account", desc: "Sign up with email or Google in seconds." },
+  { step: "01", title: "Create an account", desc: "Sign up with email " },
   { step: "02", title: "Browse resources", desc: "Search notes shared by students in your college." },
   { step: "03", title: "Upload & share", desc: "Upload your own notes and help your community." },
   { step: "04", title: "Collaborate", desc: "Join study rooms, chat, draw on whiteboards together." },

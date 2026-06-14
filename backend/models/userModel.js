@@ -27,10 +27,6 @@ const userSchema = new Schema({
     semester:{
         type:Number
     },
-    googleAuth:{
-        type:Boolean,
-        default:false
-    },
     refreshToken:{
         type:String
     },

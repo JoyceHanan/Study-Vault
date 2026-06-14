@@ -1,11 +1,3 @@
-/**
- * common.js — BMW Design System Style Tokens
- * Based on BMW Type Next Latin / corporate blue design language.
- * All values use Tailwind utility classes with inline CSS where needed.
- *
- * Font note: BMW Type Next Latin is a licensed typeface.
- * Substitute: Inter (700 / 300) — add to your project via Google Fonts or local.
- */
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
