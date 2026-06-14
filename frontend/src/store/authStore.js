@@ -1,8 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-axios.defaults.baseURL =
-  "http://localhost:5000";
-
+axios.defaults.baseURL = "https://study-vault-qw0b.onrender.com";
 axios.defaults.withCredentials = true;
 export const useAuthStore = create((set) => ({
 

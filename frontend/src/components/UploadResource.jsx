@@ -74,7 +74,7 @@ function UploadResource() {
       formData.append("file", file);
 
       const res = await axios.post(
-        "http://localhost:5000/resource-api/upload",
+        "/resource-api/upload",
         formData,
         {
           withCredentials: true,

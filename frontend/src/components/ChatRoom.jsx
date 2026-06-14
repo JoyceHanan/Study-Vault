@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import { useAuthStore } from "../store/authStore";
 import { textInput, primaryBtn } from "../styles/common";
 
-const SOCKET_URL = "http://localhost:5000";
+const SOCKET_URL = "https://study-vault-qw0b.onrender.com";
 
 function Chatroom() {
   const { roomId }    = useParams();

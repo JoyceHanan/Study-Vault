@@ -21,7 +21,7 @@ function Resources() {
 
   const getResources = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/resource-api");
+      const res = await axios.get("/resource-api");
       setResources(res.data.payload || []);
       setFilteredResources(res.data.payload || []);
     } catch (err) {
@@ -45,7 +45,7 @@ function Resources() {
   const handleUpvote = async (id) => {
     try {
       await axios.post(
-        `http://localhost:5000/resource-api/${id}/upvote`,
+        `/resource-api/${id}/upvote`,
         {},
         { withCredentials: true }
       );
@@ -58,7 +58,7 @@ function Resources() {
   const handleDownvote = async (id) => {
     try {
       await axios.post(
-        `http://localhost:5000/resource-api/${id}/downvote`,
+        `/resource-api/${id}/downvote`,
         {},
         { withCredentials: true }
       );
@@ -71,7 +71,7 @@ function Resources() {
   const handleDownload = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/resource-api/download/${id}`,
+        `/resource-api/download/${id}`,
         { withCredentials: true }
       );
       const link = document.createElement("a");

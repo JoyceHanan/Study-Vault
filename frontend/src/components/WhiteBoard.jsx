@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 
-const SOCKET_URL  = "http://localhost:5000";
+const SOCKET_URL  = "https://study-vault-qw0b.onrender.com";
 const COLORS      = ["#262626","#1c69d4","#e22718","#22c55e","#f59e0b","#ffffff"];
 const BRUSH_SIZES = [2, 4, 8, 16];
 
