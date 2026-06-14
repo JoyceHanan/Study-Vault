@@ -1,17 +1,17 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import { Toaster } from "react-hot-toast";
-import RootLayout from "./components/RootLayout";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Dashboard from "./components/Dashboard";
-import Profile from "./components/Profile";
-import Resources from "./components/Resources";
-import ResourceDetails from "./components/ResourceDetails";
-import UploadResource from "./components/UploadResource";
-import WhiteboardRooms from "./components/WhiteboardRooms";
-import Whiteboard from "./components/Whiteboard";
-import ChatRoom from "./components/ChatRoom";
+import RootLayout from "./components/RootLayout.jsx";
+import Home from "./components/Home.jsx";
+import Login from "./components/Login.jsx";
+import Register from "./components/Register.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import Profile from "./components/Profile.jsx";
+import Resources from "./components/Resources.jsx";
+import ResourceDetails from "./components/ResourceDetails.jsx";
+import UploadResource from "./components/UploadResource.jsx";
+import WhiteboardRooms from "./components/WhiteboardRooms.jsx";
+import Whiteboard from "./components/Whiteboard.jsx";
+import ChatRoom from "./components/ChatRoom.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
