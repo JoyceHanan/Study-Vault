@@ -16,13 +16,13 @@ import {socketConnection}from "./socket/socket.js"
 config()
  const app=exp()
  app.use(cors({
-    origin:"http://localhost:5173",
+    origin: ["http://localhost:5173", "https://study-vault-eight-ruddy.vercel.app/"],
     credentials:true
 }))
 //Socket connection
  const server=http.createServer(app);
  const io=new Server(server,{cors:{
-        origin: "http://localhost:5173",
+        origin: ["http://localhost:5173", "https://study-vault-eight-ruddy.vercel.app/"],
         credentials: true
     }});
  socketConnection(io);
