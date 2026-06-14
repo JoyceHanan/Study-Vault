@@ -10,7 +10,7 @@ import Resources from "./components/Resources.jsx";
 import ResourceDetails from "./components/ResourceDetails.jsx";
 import UploadResource from "./components/UploadResource.jsx";
 import WhiteboardRooms from "./components/WhiteboardRooms.jsx";
-import Whiteboard from "./components/Whiteboard.jsx";
+import Whiteboard from  "./components/Whiteboard.jsx";
 import ChatRoom from "./components/ChatRoom.jsx";
 const router = createBrowserRouter([
   {
